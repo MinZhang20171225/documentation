@@ -1,0 +1,71 @@
+
+
+修改mach-smdkv210.c文件，添加lte480wv平台设备、fb_win参数、s3c_fb_platdata
+
+修改内核配置
+Device Drivers --->
+    Graphics support --->
+        <*> Support for frame buffer devices ---> 
+            <*> Samsung S3C framebuffer support
+
+Device Drivers --->
+    Graphics support --->
+        [*] Backlight & LCD device support ---> 
+	<*>Lowlevel LCD controls
+	<*> Platform LCD controls
+	<*> Lowlevel Backlight controls
+	<*>Generic (aka Sharp Corgi) Backlight Driver
+
+Device Drivers --->
+    Graphics support --->
+        Console display driver support ---> 
+            <*> Framebuffer Console support 
+
+Device Drivers --->
+    Graphics support --->
+        [*] Bootup logo --->
+
+
+g++ -o lcdts lcdts.cpp
+./lcdts > /home/work/nfs/rootfs/home/root/test.img
+cat /home/root/test.img > /dev/fb0
+
+
+[root@tq210 /]#ls /sys/class/lcd/platform-lcd.0/
+contrast      lcd_power     power         uevent
+device        max_contrast  subsystem
+
+我们可以通过向 lcd_power 这个属性文件写入数字来控制 LCD 背光。
+写入 4 关闭 LCD 背光,写入其他值打开 LCD 背光。
+echo 4 > /sys/class/lcd/platform-lcd.0/lcd_power 关闭背光
+echo 1 > /sys/class/lcd/platform-lcd.0/lcd_power 打开背光
+
+
+static struct s3c_fb_pd_win smdkv210_fb_win0 = {
+	.win_mode = {
+		.left_margin	= 26,	//h_bp
+		.right_margin	= 16,	//h_fp
+		.upper_margin	= 13,	//v_bp
+		.lower_margin	= 22,	//v_fp
+		.hsync_len	= 20,
+		.vsync_len	= 10,
+		.xres		= 800,
+		.yres		= 480,
+	},
+	.max_bpp	= 32,
+	.default_bpp	= 24,
+};
+
+
+使控制台内容同时输出到lcd和串口
+<*> Framebuffer Console support 
+console [tty0] enabled
+console [ttySAC0] enabled
+启动参数：
+#define CONFIG_BOOTARGS	"noinitrd console=tty0 console=ttySAC0 root=/dev/nfs rw " \
+"nfsroot=192.168.1.8:/home/work/nfs/rootfs,v3,nolock,tcp ip=192.168.1.6 init=/linuxrc"
+
+
+
+
+

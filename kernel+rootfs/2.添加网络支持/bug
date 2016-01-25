@@ -1,0 +1,6 @@
+/* Fixing bug on dm9000_probe, takeover dm9000_reset(db),
+	 * Need 'NCR_MAC_LBK' bit to indeed stable our DM9000 fifo
+	 * while probe stage.
+	 */
+由于去除了dm9000_reset(db)，所以出现read wrong id 0x01010101
+返回上一版本，3.8.3中提取

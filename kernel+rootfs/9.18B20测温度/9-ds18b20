@@ -1,0 +1,38 @@
+
+配置内核，支持w1-gpio和ds18b20驱动：
+ 	Device Drivers  ---> 
+		<*> Dallas's 1-wire support  --->
+		--- Dallas's 1-wire support
+			1-wire Bus Masters  ---> 
+		 		<*> GPIO 1-wire busmaster
+			1-wire Slaves  --->
+				<*> Thermal family implementation
+
+Driver for 1-wire Dallas network protocol.
+w1_master_driver w1_bus_master1: Family 28 for 28.00000482b508.62 is not registered.
+
+[root@tq210 /]#ls sys/bus/w1/devices/ -l
+total 0
+lrwxrwxrwx    1 root     root             0 Jan  1 00:02 28-00000482b508 -> ../../../devices/w1_bus_master1/28-00000482b508
+lrwxrwxrwx    1 root     root             0 Jan  1 00:02 w1_bus_master1 -> ../../../devices/w1_bus_master1
+[root@tq210 /]#cd sys/devices/w1_bus_master1/
+[root@tq210 /sys/devices/w1_bus_master1]#ls
+28-00000482b508            w1_master_attempts         w1_master_search
+driver                     w1_master_max_slave_count  w1_master_slave_count
+power                      w1_master_name             w1_master_slaves
+subsystem                  w1_master_pointer          w1_master_timeout
+uevent                     w1_master_pullup
+w1_master_add              w1_master_remove
+[root@tq210 /sys/devices/w1_bus_master1]#cd 28-00000482b508/
+[root@tq210 /sys/devices/w1_bus_master1/28-00000482b508]#ls
+driver     id         name       power      subsystem  uevent     w1_slave
+[root@tq210 /sys/devices/w1_bus_master1/28-00000482b508]#cat w1_slave 
+2b 02 4b 46 7f ff 05 10 47 : crc=47 YES
+2b 02 4b 46 7f ff 05 10 47 t=34687
+
+
+
+
+
+
+

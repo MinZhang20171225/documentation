@@ -1,0 +1,38 @@
+
+
+配置内核，支持LCD背光驱动：
+Device Drivers --->
+         Graphics support --->
+         [*] Backlight & LCD device support --->
+                 <*> Generic PWM based Backlight Driver
+配置内核，支持按键PWM驱动：
+System Type --->
+	[*] PWM device support
+
+
+
+查看设备：
+[root@tq210 /]#ls /sys/class/backlight/pwm-backlight.0/
+actual_brightness  device             subsystem
+bl_power           max_brightness     type
+brightness         power              uevent
+
+brightness 表示当前亮度,可读写
+操作设备：
+#cat /sys/class/backlight/pwm-backlight.0/max_brightness  （查看背光最大值）
+#echo 50 > /sys/class/backlight/pwm-backlight.0/brightness  （设置背光亮度）
+
+
+
+
+static struct platform_pwm_backlight_data smdkv210_bl_data = {
+	.pwm_id = 0,
+	.max_brightness	= 255,
+	.dft_brightness	= 100,
+	.lth_brightness	= 50,
+	.pwm_period_ns	= 20000,
+};
+
+
+
+

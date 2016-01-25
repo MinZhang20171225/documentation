@@ -1,0 +1,234 @@
+cat /dev/urandom > /dev/dsp
+
+
+	[PRI_PLAYBACK] = { /* Primary Playback i/f */
+		.name = "WM8960 PAIF RX",
+		.stream_name = "Playback",
+		.cpu_dai_name = "samsung-i2s.0",
+		.codec_dai_name = "wm8960-hifi",
+		.platform_name = "samsung-audio",
+		.codec_name = "wm8960.0-001a",
+		.init = smdk_wm8960_init_paifrx,
+		.ops = &smdk_ops,
+	},
+
+
+i2s.c "samsung-i2s"
+dma.c "samsung-audio"
+idma.c "samsung-idma"
+tq210_wm8960.c "smdk-audio"
+&s5pv210_device_iis0,	"samsung-i2s"
+&samsung_asoc_dma,	"samsung-audio"
+&samsung_asoc_idma,	"samsung-idma"
+&goni_device_audio,	"smdk-audio"
+
+
+
+
+
+/*
+* wm8960 register cache
+* We can't read the WM8960 register space when we are
+* using 2 wire for device control, so we cache them instead.
+*/
+static const u16 wm8960_reg[WM8960_CACHEREGNUM] = {
+0x0017, 0x0017, 0x0000, 0x0000,
+0x0000, 0x0000, 0x0000, 0x0002,
+0x01c0, 0x0040, 0x00ff, 0x00ff,
+0x0000, 0x0000, 0x0000, 0x0000,
+0x0000, 0x007b, 0x0100, 0x0032,
+0x0000, 0x00d1, 0x00d1, 0x01c0,
+0x0000, 0x0000, 0x0000, 0x0000,
+0x0000, 0x0000, 0x0000, 0x0000,
+0x0100, 0x0130, 0x0050, 0x0050,
+0x0050, 0x0050, 0x0000, 0x0000,
+0x0079, 0x0079, 0x0040, 0x0000,
+0x0000, 0x0050, 0x0050, 0x0000,
+0x0002, 0x0037, 0x004d, 0x0080,
+0x0008, 0x0031, 0x0026, 0x00e9,
+};
+
+
+#if 1
+        reg = snd_soc_read(codec, WM8960_POWER1);
+        snd_soc_write(codec, WM8960_POWER1, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_LINPATH);
+        snd_soc_write(codec, WM8960_LINPATH, reg | 0x1B8);
+        reg = snd_soc_read(codec, WM8960_RINPATH);
+        snd_soc_write(codec, WM8960_RINPATH, reg | 0x180);
+        reg = snd_soc_read(codec, WM8960_LOUTMIX);
+        snd_soc_write(codec, WM8960_LOUTMIX, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_ROUTMIX);
+        snd_soc_write(codec, WM8960_ROUTMIX, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_BYPASS1);
+        snd_soc_write(codec, WM8960_BYPASS1, reg | 0x080);
+        reg = snd_soc_read(codec, WM8960_LOUT1);
+        snd_soc_write(codec, WM8960_LOUT1, reg | 0x17F);
+        reg = snd_soc_read(codec, WM8960_ROUT1);
+        snd_soc_write(codec, WM8960_ROUT1, reg | 0x17F);
+        reg = snd_soc_read(codec, WM8960_ADDCTL2);
+        snd_soc_write(codec, WM8960_ADDCTL2, reg);
+        reg = snd_soc_read(codec, WM8960_INBMIX1);
+        snd_soc_write(codec, WM8960_INBMIX1, reg | 0x00E);
+        reg = snd_soc_read(codec, WM8960_INBMIX2);
+        snd_soc_write(codec, WM8960_INBMIX2, reg | 0x00E);
+        reg = snd_soc_read(codec, WM8960_LOUTMIX);
+        snd_soc_write(codec, WM8960_LOUTMIX, (reg & 0xF0F) | 0x80);
+        reg = snd_soc_read(codec, WM8960_ROUTMIX);
+        snd_soc_write(codec, WM8960_ROUTMIX, (reg & 0xF0F) | 0x80);
+        reg = snd_soc_read(codec, WM8960_POWER3);
+        snd_soc_write(codec, WM8960_POWER3, reg | 0x0C);
+        reg = snd_soc_read(codec, WM8960_LOUT2);
+        snd_soc_write(codec, WM8960_LOUT2, reg | 0x0F);
+        reg = snd_soc_read(codec, WM8960_ROUT2);
+        snd_soc_write(codec, WM8960_ROUT2, reg | 0x0F);
+        reg = snd_soc_read(codec, WM8960_POWER2);
+        snd_soc_write(codec, WM8960_POWER2, reg | 0x60);
+#endif
+
+
+ /* Latch the update bits */  
+    snd_soc_update_bits(codec, WM8960_LINVOL, 0x100, 0x100);  
+    snd_soc_update_bits(codec, WM8960_RINVOL, 0x100, 0x100);  
+    snd_soc_update_bits(codec, WM8960_LADC, 0x100, 0x100);  
+    snd_soc_update_bits(codec, WM8960_RADC, 0x100, 0x100);  
+    snd_soc_update_bits(codec, WM8960_LDAC, 0x100, 0x100);  
+    snd_soc_update_bits(codec, WM8960_RDAC, 0x100, 0x100);  
+    snd_soc_update_bits(codec, WM8960_LOUT1, 0x100, 0x100);  
+    snd_soc_update_bits(codec, WM8960_ROUT1, 0x100, 0x100);  
+    snd_soc_update_bits(codec, WM8960_LOUT2, 0x100, 0x100);  
+    snd_soc_update_bits(codec, WM8960_ROUT2, 0x100, 0x100);  
+  
+    /* other configuration */  
+    snd_soc_update_bits(codec, WM8960_POWER1, 0x1ea, 0x1ea);  
+    snd_soc_update_bits(codec, WM8960_POWER2, 0x1f8, 0x1f8);  
+    snd_soc_update_bits(codec, WM8960_POWER3, 0xcc, 0xcc);  
+    snd_soc_update_bits(codec, WM8960_LOUTMIX, 0x100, 0x100);  
+    snd_soc_update_bits(codec, WM8960_ROUTMIX, 0x100, 0x100);  
+    snd_soc_update_bits(codec, WM8960_POWER3, 0xc, 0xc);  
+    snd_soc_update_bits(codec, WM8960_LOUT1, 0x7f, 0x7f);  
+    snd_soc_update_bits(codec, WM8960_ROUT1, 0x7f, 0x7f);  
+    snd_soc_update_bits(codec, WM8960_IFACE2, 0x40, 0x40);  
+    snd_soc_update_bits(codec, WM8960_MONOMIX2, 0x120, 0x120);  
+    snd_soc_update_bits(codec, WM8960_LINPATH, 0x1f8, 0x138);  
+    snd_soc_update_bits(codec, WM8960_LINVOL, 0x19f, 0x11f);  
+    snd_soc_update_bits(codec, WM8960_RINVOL, 0x19f, 0x11f);  
+    snd_soc_update_bits(codec, WM8960_LOUT2, 0x1ff, 0x1ff);  
+    snd_soc_update_bits(codec, WM8960_ROUT2, 0x1ff, 0x1ff);  
+    snd_soc_update_bits(codec, WM8960_CLASSD3, 0x1a, 0x12);  
+    snd_soc_update_bits(codec, WM8960_CLASSD1, 0xc0, 0xc0); 
+
+
+
+#if 1
+        snd_soc_write(codec, WM8960_LOUTMIX, 0x100);
+        snd_soc_write(codec, WM8960_ROUTMIX, 0x100);
+
+
+        /* Latch the update bits */
+        reg = snd_soc_read(codec, WM8960_LINVOL);
+        snd_soc_write(codec, WM8960_LINVOL, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_RINVOL);
+        snd_soc_write(codec, WM8960_RINVOL, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_LADC);
+        snd_soc_write(codec, WM8960_LADC, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_RADC);
+        snd_soc_write(codec, WM8960_RADC, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_LDAC);
+        snd_soc_write(codec, WM8960_LDAC, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_RDAC);
+        snd_soc_write(codec, WM8960_RDAC, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_LOUT1);
+        snd_soc_write(codec, WM8960_LOUT1, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_ROUT1);
+        snd_soc_write(codec, WM8960_ROUT1, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_LOUT2);
+        snd_soc_write(codec, WM8960_LOUT2, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_ROUT2);
+        snd_soc_write(codec, WM8960_ROUT2, reg | 0x100);
+
+        reg = snd_soc_read(codec, WM8960_POWER2);
+        snd_soc_write(codec, WM8960_POWER2, reg | 0x018); // 1A h
+        reg = snd_soc_read(codec, WM8960_CLASSD1);
+        snd_soc_write(codec, WM8960_CLASSD1, reg | 0x0C0); // 31 h
+        reg = snd_soc_read(codec, WM8960_LOUT2);
+        snd_soc_write(codec, WM8960_LOUT2, reg | 0x03f);
+        reg = snd_soc_read(codec, WM8960_ROUT2);
+        snd_soc_write(codec, WM8960_ROUT2, reg | 0x03f);
+
+
+/* AINL = 1
+   LMIC = 1
+   LINMUTE =0
+   LMN1 = 1
+   LMP2 = 1
+   LMP3 = 0
+   LIN2BOOST = 000
+   LIN3BOOST = 000
+   LI2LO = 0
+*/
+
+        reg = snd_soc_read(codec, 0x00);
+        snd_soc_write(codec, 0x00, reg & ~(0x080)); // 00h
+        reg = snd_soc_read(codec, 0x2B);
+        snd_soc_write(codec, 0x2B, reg & ~(0x07e)); // 2bh
+        reg = snd_soc_read(codec, 0x22);
+        snd_soc_write(codec, 0x22, reg & ~(0x080)); // 2bh
+
+
+        reg = snd_soc_read(codec, WM8960_POWER1);
+        snd_soc_write(codec, WM8960_POWER1, reg | 0x02a); // 19h
+        reg = snd_soc_read(codec, WM8960_LINPATH);
+        snd_soc_write(codec, WM8960_LINPATH, reg | 0x148); //20h
+        reg = snd_soc_read(codec, WM8960_POWER3);
+        snd_soc_write(codec, WM8960_POWER3, reg | 0x020); // 2Fh
+
+        reg = snd_soc_read(codec, WM8960_LDAC);
+        snd_soc_write(codec, WM8960_LDAC, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_RDAC);
+        snd_soc_write(codec, WM8960_RDAC, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_LOUT1);
+        snd_soc_write(codec, WM8960_LOUT1, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_ROUT1);
+        snd_soc_write(codec, WM8960_ROUT1, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_LOUT2);
+        snd_soc_write(codec, WM8960_LOUT2, reg | 0x100);
+        reg = snd_soc_read(codec, WM8960_ROUT2);
+        snd_soc_write(codec, WM8960_ROUT2, reg | 0x100);
+
+        // HP Detect Auto Mode : by pjlee
+        reg = snd_soc_read(codec, WM8960_ADDCTL1);      // 17
+        snd_soc_write(codec, WM8960_ADDCTL1, reg | 0x001);
+        reg = snd_soc_read(codec, WM8960_ADDCTL2);      // 18
+        snd_soc_write(codec, WM8960_ADDCTL2, reg | 0x060);
+        reg = snd_soc_read(codec, WM8960_ADDCTL3);      // 1b
+        snd_soc_write(codec, WM8960_ADDCTL3, reg | 0x008);
+        reg = snd_soc_read(codec, WM8960_IFACE2);       // 09
+        snd_soc_write(codec, WM8960_IFACE2, reg | 0x040);
+        reg = snd_soc_read(codec, WM8960_LOUT1);        // 02
+        snd_soc_write(codec, WM8960_LOUT1, reg | 0x05f);
+        reg = snd_soc_read(codec, WM8960_ROUT1);        // 03
+        snd_soc_write(codec, WM8960_ROUT1, reg | 0x05f);
+
+        // MIC L,R-INPUT1 Enable : by pjlee
+        // WMIDSEL=1, VREF=1, AINL=1, AINR=1, ADCL=1, MICB=0, DIGENB=0
+        snd_soc_write(codec, WM8960_POWER1, 0x00FC);
+        // LIMC=1, RMIC=1, LOMIX=0, ROMIX=0
+        snd_soc_write(codec, WM8960_POWER3, 0x0030);
+        // LMN1=1, LMP3=0, LMP2=0, LMICBOOST=0, LMIC2B=1
+        snd_soc_write(codec, WM8960_LINPATH, 0x0108);
+        // RMN1=1, RMP3=0, RMP2=0, RMICBOOST=0, RMIC2B=1
+        snd_soc_write(codec, WM8960_RINPATH, 0x0108);
+        // IPVU=1, LINMUTE=0, LIZC=0, LINVOL=01_0111
+        snd_soc_write(codec, WM8960_LINVOL, 0x0117);
+        // IPVU=1, RINMUTE=0, RIZC=0, RINVOL=01_0111
+        snd_soc_write(codec, WM8960_RINVOL, 0x0117);
+        // ADCVU=1, LADCVOL=1100_0011
+        snd_soc_write(codec, WM8960_LADC, 0x01C3);
+        // ADCVU=1, RADCVOL=1100_0011
+        snd_soc_write(codec, WM8960_RADC, 0x01C3);
+
+#endif
+
+
+

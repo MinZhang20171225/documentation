@@ -1,0 +1,102 @@
+
+蜂鸣器驱动基于PWM1（timer1），使用GPD0_1这个IO口控制，通用的驱动文件为：drivers/input/misc/pwm-beeper.c，它属于input设备。
+
+发声原理：PWM输出的占空比保持不变（50%），改变PWM频率即可改变发声频率
+
+
+构建蜂鸣器设备的platform_device结构体：
+/* Buzzer */
+static struct platform_device xc2440_beeper_device = {
+	.name		= "pwm-beeper",
+	.dev		= {
+		.parent 		= &s3c_device_timer[1].dev,
+		.platform_data 	= 1,	//pwm通道
+	},
+	.id = 0,
+};
+
+
+在smdkv210_machine_init(void)函数中的适当位置添加对定时器1引脚的配置：
+static int __init smdkv210_pwm_beeper_init(void)
+{
+	int ret;
+
+	ret = gpio_request(S5PV210_GPD0(1), "beeper");
+	if (ret) {
+		printk(KERN_ERR "failed to request GPD for PWM-OUT 1\n");
+		return ret;
+	}
+
+	// Configure GPIO pin with S5PV210_GPD_0_1_TOUT_3 
+	s3c_gpio_cfgpin(S5PV210_GPD0(1), S3C_GPIO_SFN(2));
+
+	return 0;
+}
+
+删除Kconfig无关选项
+
+配置内核，支持按键PWM驱动：
+Device Drivers --->
+    Input device support --->
+          [*]Miscellaneous devices --->
+                 <*>PWM beeper support
+内核启动输出：
+input: pwm-beeper as /devices/platform/s3c24xx-pwm.1/pwm-beeper.0/input/input0
+查看设备：
+/dev/input/event0
+
+应用程序使用input_event来操作
+
+arm-linux-gcc beep_test.c -o beep_test
+
+
+
+
+    struct platform_device {
+
+       /*设备名*/
+        const char    * name;
+        /*设备ID号*/
+
+        int        id;
+
+       /*结构体包含一个具体的device结构体*/
+        struct device    dev;
+
+        /*资源的数量*/
+        u32        num_resources;
+
+        /*资源结构体，用来保存硬件的资源*/
+        struct resource    * resource;
+
+        /*平台设备的ID*/
+        struct platform_device_id    *id_entry;
+    };
+
+    其中struct device 和 struct resource 是重要的结构体。struct device 在总线设备驱动模型中已经提到了。这次讨论一下struct resource。
+
+
+    struct resource {
+        /*资源的起始值，如果是地址，那么是物理地址，不是虚拟地址*/
+        resource_size_t start;
+        /*资源的结束值，如果是地址，那么是物理地址，不是虚拟地址*/
+        resource_size_t end;
+        /*资源名*/
+        const char *name;
+        /*资源的标示，用来识别不同的资源*/
+        unsigned long flags;
+        /*资源指针，可以构成链表*/
+        struct resource *parent, *sibling, *child;
+    };
+
+    platform_device 的注册很简单，只需要在设备的初始化函数中首先定义相应的设备，通常采用函数platform_device *platform_device_alloc(const char *name, int id)动态申请，通常name就是需要申请的设备名，而id为-1。然后采用
+
+    int platform_device_add(struct platform_device *pdev)
+
+    或者
+
+    int platform_device_register(struct platform_device *pdev)
+
+    注册定义好的设备即可。
+
+

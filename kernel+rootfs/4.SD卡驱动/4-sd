@@ -1,0 +1,46 @@
+
+/* MMC/SD config*/
+static structs3c_sdhci_platdata ok6410_hsmmc0_pdata = {
+    .max_width      = 4,
+    .cd_type        = S3C_SDHCI_CD_INTERNAL,
+};
+
+static structs3c_sdhci_platdata ok6410_hsmmc1_pdata = {
+    .max_width      = 4,
+    .cd_type        = S3C_SDHCI_CD_PERMANENT,
+//    .cd_type        = S3C_SDHCI_CD_GPIO,
+//    .ext_cd_gpio    = S3C64XX_GPN(6),
+};
+
+其中声明了card的探测行为：mmc0是由sd控制器内部的探测机制来探测卡的存在的，这个我们将在讲解sd卡协议的时候讲。
+Mmc1卡的探测类型为：S3C_SDHCI_CD_PERMANENT，表示的是这个卡是不可插拔的。
+
+添加驱动
+
+使内核支持 ext4
+
+
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- distclean
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- menuconfig(.config)
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- uImage
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- modules
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- modules_install INSTALL_MOD_PATH=/home/work/nfs/rootfs
+
+
+mount -t vfat /dev/mmcblk0p1 /mnt
+umount /mnt/
+mount -t ext4 /dev/mmcblk0p2 /mnt/
+[  267.248260] EXT4-fs (mmcblk0p2): recovery complete
+[  267.248330] EXT4-fs (mmcblk0p2): mounted filesystem with ordered data mode. Opts: (null)
+
+
+
+mkfs -t vfat /dev/sdb1
+
+
+
+
+
+
+
+

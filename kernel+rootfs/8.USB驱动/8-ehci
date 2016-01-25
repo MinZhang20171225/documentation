@@ -1,0 +1,128 @@
+
+
+配置内核，支持USB Host：
+Device drivers --->
+    SCSI Device support --->
+        <*> SCSI device support
+	<*> SCSI disk support
+    [*] HID Devices --->
+	-*- Generic HID support
+	<*> USB Human Interface Device (full HID) support
+    [*] USB support --->
+	{*} Support for Host-side USB
+	[*] USB announce new devices
+	[*] USB device filesystem
+	<*> OHCI HCD support
+	<*> USB Mass Storage support
+
+
+device drivers-->SCSI device support -->
+│ ┌────────────────────────────────────────────────────────────────────┐ │ 
+│ │ < > RAID Transport Class │ │ 
+│ │ <*> SCSI device support │ │ 
+│ │ < > SCSI target support │ │ 
+│ │ [*] legacy /proc/scsi/ support │ │ 
+│ │ *** SCSI support type (disk, tape, CD-ROM) *** │ │ 
+│ │ <*> SCSI disk support │ │ 
+│ │ < > SCSI tape support │ │ 
+│ │ < > SCSI OnStream SC-x0 tape support │ │ 
+│ │ < > SCSI CDROM support │ │ 
+│ │ <*> SCSI generic support │ │ 
+│ │ < > SCSI media changer support │ │ 
+│ │ [ ] Probe all LUNs on each SCSI device │ │ 
+│ │ [ ] Verbose SCSI error reporting (kernel size +=12K) │ │ 
+│ │ [ ] SCSI logging facility │ │ 
+│ │ [ ] Asynchronous SCSI scanning │ │ 
+│ │ SCSI Transports ---> │ │ 
+│ │ [*] SCSI low-level drivers ---> │ │ 
+│ │ < > SCSI Device Handlers ---> │ │ 
+│ │ < > OSD-Initiator library
+
+
+[root@tq210 /]#cat /proc/partitions
+major minor  #blocks  name
+
+   8        0     511744 sda
+   8        4     511681 sda4
+
+[root@tq210 /]#mount -t vfat /dev/sda /mnt/
+mount: mounting /dev/sda on /mnt/ failed: Invalid argument
+[root@tq210 /]#mount -t vfat /dev/sda4 /mnt/
+[root@tq210 /]#ls mnt
+?? - ????? [mqms2].mp3   MINIPE                   WXPE
+??? - ????? [mqms2].mp3  NTDETECT.COM             home
+BOOTEX.LOG               NTLDR                    protel991se.rar
+BOOTFONT.BIN             PESETUP.EXE              public
+Kugou                    WINNT.XPE                udisklist
+[root@tq210 /]#umount /mnt/
+
+
+
+
+
+int s5p_usb_phy_init(struct platform_device *pdev, int type)
+{
+	int err;
+	struct clk *otg_clk;
+
+	if (type != S5P_USB_PHY_HOST)
+		return -EINVAL;
+
+	otg_clk = clk_get(&pdev->dev, "otg");
+	if (IS_ERR(otg_clk)) {
+		dev_err(&pdev->dev, "Failed to get otg clock\n");
+		return PTR_ERR(otg_clk);
+	}
+
+	err = clk_enable(otg_clk);
+	if (err) {
+		clk_put(otg_clk);
+		return err;
+	}
+
+	if (readl(S5PV210_USB_PHY_CON) & (0x1<<1)) {
+		clk_disable(otg_clk);
+		clk_put(otg_clk);
+		return 0;
+	}
+
+	__raw_writel(__raw_readl(S5PV210_USB_PHY_CON) | (0x1<<1),
+		     S5PV210_USB_PHY_CON);
+	__raw_writel((__raw_readl(S3C_PHYPWR)
+		      & ~(0x1<<7) & ~(0x1<<6)) | (0x1<<8) | (0x1<<5) | (0x1<<4),
+		     S3C_PHYPWR);
+	__raw_writel((__raw_readl(S3C_PHYCLK) & ~(0x1<<7)) | (0x3<<0),
+		     S3C_PHYCLK);
+	__raw_writel((__raw_readl(S3C_RSTCON)) | (0x1<<4) | (0x1<<3),
+		     S3C_RSTCON);
+	__raw_writel(__raw_readl(S3C_RSTCON) & ~(0x1<<4) & ~(0x1<<3),
+		     S3C_RSTCON);
+	/* "at least 10uS" for PHY reset elsewhere, 20 not enough here... */
+	udelay(50);
+
+	clk_disable(otg_clk);
+	clk_put(otg_clk);
+
+	return 0;
+}
+
+int s5p_usb_phy_exit(struct platform_device *pdev, int type)
+{
+	if (type != S5P_USB_PHY_HOST)
+		return -EINVAL;
+
+	__raw_writel(__raw_readl(S3C_PHYPWR) | (0x1<<7)|(0x1<<6),
+		     S3C_PHYPWR);
+	__raw_writel(__raw_readl(S5PV210_USB_PHY_CON) & ~(1<<1),
+		     S5PV210_USB_PHY_CON);
+
+	return 0;
+}
+
+
+/* DMA burst Enable */
+	/*writel(EHCI_INSNREG00_ENABLE_DMA_BURST, EHCI_INSNREG00(hcd->regs));*/
+	writel(0x000E0000, hcd->regs + 0x90);  
+	writel(0x00400040, hcd->regs + 0x94);
+
+

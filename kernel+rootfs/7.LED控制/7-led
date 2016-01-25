@@ -1,0 +1,57 @@
+
+		.name			= "led1",
+		.default_trigger	= "heartbeat",
+		.gpio			= S5PV210_GPC0(3),
+
+		.name			= "led2",
+		.default_trigger	= "timer",
+		.gpio			= S5PV210_GPC0(4),
+
+[root@tq210 /]#ls sys/class/leds/
+led1    led2    mmc0::
+
+[root@tq210 /]#ls sys/class/leds/led1
+brightness      max_brightness  subsystem       uevent
+device          power           trigger
+
+[root@tq210 /]#ls sys/class/leds/led2
+brightness      delay_on        max_brightness  subsystem       uevent
+delay_off       device          power           trigger
+[root@tq210 /]#cat sys/class/leds/led2/delay_on
+500
+[root@tq210 /]#cat sys/class/leds/led2/delay_off
+500
+[root@tq210 /]#echo 1000 > /sys/class/leds/led2/delay_on
+[root@tq210 /]#echo 1500 > /sys/class/leds/led2/delay_off
+
+
+
+/*
+		name			= "led2",
+		.gpio			= S5PV210_GPC0(4),
+[root@tq210 /]#ls sys/class/leds/led2
+brightness      max_brightness  subsystem       uevent
+device          power           trigger
+
+点亮led2:
+echo 1 > /sys/class/leds/led2/brightness
+关闭led2：
+echo 0 > /sys/class/leds/led2/brightness
+*/
+
+默认
+[root@tq210 /]#cat sys/class/leds/led2/delay_on
+500
+[root@tq210 /]#cat sys/class/leds/led2/delay_off 
+500
+[root@tq210 /]#cat sys/class/leds/led2/brightness 
+0
+[root@tq210 /]#cat sys/class/leds/led2/trigger 
+none mmc0 [timer] heartbeat rfkill0 
+
+
+
+
+
+
+

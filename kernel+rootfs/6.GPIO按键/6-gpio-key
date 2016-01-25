@@ -1,0 +1,73 @@
+
+基于输入子系统
+
+编译内核时选择：
+Device Drivers >
+Input device support >
+[*] Keyboards
+<*> GPIO Buttons
+
+input: gpio-keys as /devices/platform/gpio-keys/input/input0
+
+
+[root@tq210 /]#ls sys/class/input/ -al
+total 0
+drwxr-xr-x    2 root     root             0 Jan  1 00:00 .
+drwxr-xr-x   18 root     root             0 Jan  1 00:00 ..
+lrwxrwxrwx    1 root     root             0 Jan  1 00:00 event0 -> ../../devices/platform/gpio-keys/input/input0/event0
+lrwxrwxrwx    1 root     root             0 Jan  1 00:00 input0 -> ../../devices/platform/gpio-keys/input/input0
+lrwxrwxrwx    1 root     root             0 Jan  1 00:00 mice -> ../../devices/virtual/input/mice
+[root@tq210 /]#ls /dev/input/
+event0  mice
+
+
+#cat /proc/bus/input/devices 
+I: Bus=0019 Vendor=0001 Product=0001 Version=0100
+N: Name="gpio-keys"
+P: Phys=gpio-keys/input0
+S: Sysfs=/devices/platform/gpio-keys/input/input0
+U: Uniq=
+H: Handlers=kbd event0 
+B: PROP=0
+B: EV=3
+B: KEY=c1680 0 0 10000002
+
+[root@tq210 /]#cat /proc/interrupts 
+           CPU0       
+ 13:        961  s3c-timer  s5p_time_irq
+ 32:          0  s5p_vic_eint  up
+ 33:          0  s5p_vic_eint  down
+ 34:          0  s5p_vic_eint  left
+ 35:          0  s5p_vic_eint  right
+ 36:          0  s5p_vic_eint  enter
+ 37:          0  s5p_vic_eint  esc
+ 42:       3633  s5p_vic_eint  eth0
+ 51:          0       VIC  dma-pl330.0
+ 52:          0       VIC  dma-pl330.1
+ 74:        128       VIC  s5pv210-uart
+ 78:          0       VIC  s3c2440-i2c.0
+ 90:         38       VIC  mmc0
+166:          0  s5p-eint  vol+
+167:          0  s5p-eint  vol-
+Err:          0
+
+
+Keyboard驱动测试
+
+cat /dev/input/event0
+
+hexdump /dev/input/event0
+0000000 03cf 0000 d6ac 0008 0001 0069 0001 0000
+0000010 03cf 0000 d6ac 0008 0000 0000 0000 0000
+0000020 03cf 0000 051c 000b 0001 0069 0000 0000
+0000030 03cf 0000 051c 000b 0000 0000 0000 0000
+
+
+用户可以先通过cat  /sys/class/input/input0/name判断input设备名gpio-keys
+然后应用层通过访问/dev/input/event0来读取按键，接着利用访问input设备格式判断键值区分不同的按键是否被按下。
+
+arm-none-linux-gnueabi-gcc -Wall key_test.c -o key_test
+
+
+
+

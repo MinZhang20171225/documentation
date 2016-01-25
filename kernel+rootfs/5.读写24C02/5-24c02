@@ -1,0 +1,44 @@
+
+配置内核，支持IIC总线驱动：
+Device Drivers --->
+	<*>I2C support --->
+		[*] Enable compatibility bits for old user-space
+		<*> I2C device interface
+		[*] Autoselect pertinent helper modules
+		I2C Hardware Bus support --->
+			<*>S3C2410 I2C Driver
+
+Device Drivers  --->
+	[*] Misc devices  --->  
+		EEPROM support  --->    
+			   <*> I2C EEPROMs from most vendors  //输入"Y"，选择编译进内核
+
+kconfig加入i2c1的宏，否则cannot get clock
+
+
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- menuconfig
+
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- uImage
+
+
+[root@tq210 /]#ls sys/class/i2c-adapter/
+i2c-0
+[root@tq210 /]#ls sys/class/i2c-adapter/i2c-0/
+0-0050         device         name           power          uevent
+delete_device  i2c-dev        new_device     subsystem
+[root@tq210 /]#ls sys/class/i2c-adapter/i2c-0/0-0050/
+driver     eeprom     modalias   name       power      subsystem  uevent
+[root@tq210 /]#hexdump -C /sys/class/i2c-adapter/i2c-0/0-0050/eeprom
+00000000  49 20 6c 6f 76 65 20 4c  69 6e 75 78 20 21 0a ff  |I love Linux !..|
+00000010  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  |................|
+*
+00000100
+[root@tq210 /]#echo 0123456789012345 > /sys/class/i2c-adapter/i2c-0/0-0050/eeprom 
+[root@tq210 /]#hexdump -C /sys/class/i2c-adapter/i2c-0/0-0050/eeprom
+00000000  30 31 32 33 34 35 36 37  38 39 30 31 32 33 34 35  |0123456789012345|
+00000010  0a ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  |................|
+00000020  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  |................|
+*
+00000100
+
+

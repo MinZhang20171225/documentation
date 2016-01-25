@@ -1,0 +1,101 @@
+
+
+
+建立文件目录和配置文件
+$sh 1_creat_fs_usr.sh
+建立设备节点
+#sh 2_creat_dev_root.sh
+
+
+
+编译busybox
+首先是配置busybox，make menuconfig 
+依次进入Busybox Settings =>
+2. Build Options => 
+[ ] Build BusyBox as a static binary (no shared libs) 
+Cross Compiler prefix，设置为编译器的前缀arm-none-linux-gnueabi-
+(-mthumb -march=armv7-a) Additional CFLAGS
+3.Installation Options -- 
+(/home/work/nfs/rootfs) BusyBox installation prefix，表示busybox的安装位置。
+4.Busybox Library Tuning  ---> 
+Support for /etc/networks
+vi-style line editing commands
+Username completion  
+5.配置模块的一些命令：Linux Module Utilities ---> 
+        [ ] Simplified modutils 
+        [*] insmod 
+        [*] rmmod 
+        [*] lsmod 
+	  [*]     Pretty output
+        [*] modprobe 
+	  [*]     Blacklist support
+        [*] depmod
+make
+make install
+
+
+
+[qiang@CentOS rootfs]$ arm-none-linux-gnueabi-readelf -a bin/busybox | grep 'Shared'
+ 0x00000001 (NEEDED)                     Shared library: [libm.so.6]
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+[qiang@CentOS rootfs]$ cd ../../cross/arm-2014.05/arm-none-linux-gnueabi/libc/thumb2/lib/
+[qiang@CentOS lib]$ ls -l ld-*
+-rwxr-xr-x 1 qiang qiang 137597 5月  30 2014 ld-2.18.so
+lrwxrwxrwx 1 qiang qiang     10 5月  30 2014 ld-linux.so.3 -> ld-2.18.so
+[qiang@CentOS lib]$ ls -l libm[.-]*
+-rwxr-xr-x 1 qiang qiang 621968 5月  30 2014 libm-2.18.so
+lrwxrwxrwx 1 qiang qiang     12 5月  30 2014 libm.so.6 -> libm-2.18.so
+[qiang@CentOS lib]$ ls -l libc[.-]*
+-rwxr-xr-x 1 qiang qiang 1398636 5月  30 2014 libc-2.18.so
+lrwxrwxrwx 1 qiang qiang      12 5月  30 2014 libc.so.6 -> libc-2.18.so
+我们只需要拷贝2个库（每个库各1个主修订版本的符号链接和1个实际的共享链接库）以及动态链接库加载器（1个符号链接和1个实体文件）。
+cp -a中的a参数相当于-dpR,保持文件的连接(d),保持原文件的属性(p)并作递归处理(R)
+cp libm[.-]* /home/work/nfs/rootfs/lib  -a
+cp libc[.-]* /home/work/nfs/rootfs/lib  -a
+cp ld-* /home/work/nfs/rootfs/lib  -a
+[qiang@CentOS lib]$ pwd
+/home/work/nfs/rootfs/lib
+[qiang@CentOS lib]$ ls -l
+总用量 2116
+-rwxr-xr-x 1 qiang qiang  137597 5月  30 2014 ld-2.18.so
+lrwxrwxrwx 1 qiang qiang      10 5月  30 2014 ld-linux.so.3 -> ld-2.18.so
+-rwxr-xr-x 1 qiang qiang 1398636 5月  30 2014 libc-2.18.so
+lrwxrwxrwx 1 qiang qiang      12 5月  30 2014 libc.so.6 -> libc-2.18.so
+-rwxr-xr-x 1 qiang qiang  621968 5月  30 2014 libm-2.18.so
+lrwxrwxrwx 1 qiang qiang      12 5月  30 2014 libm.so.6 -> libm-2.18.so
+drwxrwxr-x 3 qiang qiang    4096 9月  13 02:50 modules
+
+
+
+安装内核modules
+进入内核源码目录，执行
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- modules 
+待编译完成后安装modules，执行
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- modules_install INSTALL_MOD_PATH=/home/work/nfs/rootfs
+到这，根文件系统就构建完成了.
+
+
+用户管理
+在文件系统正常运行起来后，使用adduser命令：
+# adduser root
+会打印出如下消息：
+passwd：unknown uid 0
+这表示不能为该用户设置密码，此时你会发现passwd命令也无法使用。
+
+解决的办法是，
+打开/etc/passwd文件，其内容为：
+root:x:1000:1000:Linux User,,,:/home/root:/bin/sh
+将用户ID和组ID均修改为0。
+打开/etc/group文件，其内容为：
+root:x:1000:
+同样将组ID修改为0。
+
+然后，passwd命令就可以正常使用了。
+这时为root用户设置口令：
+# passwd root
+根据提示输入密码root。
+
+
+[root@CentOS nfs]# tar -czvf rootfs.tar.gz rootfs/
+
+

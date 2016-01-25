@@ -1,0 +1,35 @@
+
+(1)
+修改mach-smdkv210.c，Kconfig，s5pv210_defconfig，建立基本bsp
+
+(2)
+make ARCH=arm s5pv210_defconfig
+
+(3)
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- menuconfig
+Kernel hacking  ---> 
+ [*] Show timing information on printks
+
+(4)编译内核
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- zImage
+
+(5)uImage
+修改Makefile.lib
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- uImage
+
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- distclean
+
+  Kernel: arch/arm/boot/Image is ready
+  Kernel: arch/arm/boot/zImage is ready
+  UIMAGE  arch/arm/boot/uImage
+Image Name:   Linux-3.4.108-g76e9acc-dirty
+Created:      Sat Sep 12 17:51:56 2015
+Image Type:   ARM Linux Kernel Image (uncompressed)
+Data Size:    1198136 Bytes = 1170.05 kB = 1.14 MB
+Load Address: 20008000
+Entry Point:  20008040
+  Image arch/arm/boot/uImage is ready
+
+
+
+
