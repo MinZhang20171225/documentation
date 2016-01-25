@@ -1,0 +1,9 @@
+
+$ pwd
+/home/work/workspace/uboot
+diff -urN ref-u-boot-2013.01.01 u-boot-2013.01.01 > 1.patch
+$ pwd
+/home/work/workspace/uboot/ref-u-boot-2013.01.01
+patch -p1 < ../1.patch
+patch -R -p1 < ../1.patch
+
