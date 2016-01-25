@@ -1,0 +1,14 @@
+
+
+
+tty0::askfirst:-/bin/sh
+
+在串口上启动一个shell,并且将标准输出和错误输出重定向到tty1上sh 2>&1 > /dev/tty1或者在tty1上启动shell以串> 口为输入sh < /dev/ttyS0呢?
+
+Great, it worked!!! 
+
+sh 2>&1 > /dev/tty0
+
+
+
+
