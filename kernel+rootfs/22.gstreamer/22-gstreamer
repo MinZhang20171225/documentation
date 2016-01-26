@@ -1,0 +1,160 @@
+
+
+sqlite
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static
+make
+make install
+
+
+xz
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static
+make
+make install
+
+
+libxml2
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static --with-python=./python
+make
+make install
+
+
+libsoup
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static --without-gnome --enable-introspection=no --enable-vala=no
+make
+make install
+
+
+1.
+bzip2-1.0.6
+CC=arm-none-linux-gnueabi-gcc
+BIGFILES=-D_FILE_OFFSET_BITS=32
+make -f Makefile-libbz2_so
+ln -s libbz2.so.1.0.6 libbz2.so
+2.
+bzip2-1.0.6-pc
+make
+make install PREFIX=/home/work/appdir/bz2/bzip2-1.0.6-pc/_install
+
+
+libogg
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static
+make
+make install
+
+
+libvorbis
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static
+make
+make install
+
+
+libmms
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static
+make
+make install
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+gstreamer
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr
+make
+make install
+
+gst-plugins-base
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-orc
+make
+make install
+
+gst-plugins-good
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-orc
+make
+make install
+
+gst-plugins-bad
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-orc
+make
+make install
+
+gst-plugins-ugly
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-orc
+make
+make install
+
+gst-libav
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-orc --with-libav-extra-configure="--target-os=linux"
+make
+make install
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/gstreamer-1.0/*.so /home/work/nfs/rootfs/usr/lib/gstreamer-1.0 -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libgst*.s* /home/work/nfs/rootfs/usr/lib -a
+gst-plugin-scanner
+gst-inspect-1.0
+gst-launch-1.0 
+
+
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libgobject-2.0.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libgmodule-2.0.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libglib-2.0.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libffi.so* /home/work/nfs/rootfs/usr/lib -a
+
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libgio-2.0.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libmms.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libxml2.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libbz2.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libogg.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libsoup-2.4.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libvorbis.so* /home/work/nfs/rootfs/usr/lib -a
+
+/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/thumb2/usr/lib
+[qiang@CentOS lib]$ cp libstdc++.so* /home/work/nfs/rootfs/lib -a
+/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/thumb2/lib
+[qiang@CentOS lib]$ cp libresolv* /home/work/nfs/rootfs/lib -a
+
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/liblzma.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libsqlite3.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libvorbisenc.so* /home/work/nfs/rootfs/usr/lib -a
+
+
+
+export GST_PLUGIN_PATH=/usr/lib/gstreamer-1.0:/usr/lib
+export GST_PLUGIN_SCANNER=/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+export GST_REGISTRY=/tmp/gst_registry.bin
+
+gst-inspect-1.0
+gst-inspect-1.0 souphttpsrc
+
+gst-launch-1.0 playbin uri=file:///home/root/Gotta\ Have\ You.mp3
+
+
+
+网络电台
+
+route add default gw 192.168.1.1
+
+gst-launch-1.0 playbin uri=mms://live.cri.cn/pop
+gst-launch-1.0 playbin uri=mms://live.cri.cn/oldies
+
+gst-launch-1.0 playbin uri=http://shoutmedia.abc.net.au:10324	//MPEG-4 AAC 解码器
+gst-launch-1.0 playbin uri=http://shoutmedia.abc.net.au:10320	//MPEG-4 AAC 解码器
+gst-launch-1.0 playbin uri=http://shoutmedia.abc.net.au:10326	//MPEG-4 AAC 解码器
+gst-launch-1.0 playbin uri=http://shoutmedia.abc.net.au:10356	//MPEG-4 AAC 解码器
+gst-launch-1.0 playbin uri=http://shoutmedia.abc.net.au:10448	//MPEG-1 Layer 3 (MP3) 解码器
+gst-launch-1.0 playbin uri=http://shoutmedia.abc.net.au:10354	//MPEG-4 AAC 解码器
+
+gst-launch-1.0 playbin uri=http://sc.buddharadio.com:80	//MPEG-1 Layer 3 (MP3) 解码器
+gst-launch-1.0 playbin uri=http://mega6.radioserver.co.uk:8038	//MPEG-1 Layer 3 (MP3) 解码器
+gst-launch-1.0 playbin uri=http://smedia.hdxen.com:8000	//MPEG-1 Layer 3 (MP3) 解码器
+gst-launch-1.0 playbin uri=http://s2.viastreaming.net:6165	//MPEG-4 AAC 解码器
+
+
+
+
