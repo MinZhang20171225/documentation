@@ -1,0 +1,39 @@
+
+
+libid3tag-0.15.1b
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-debugging --disable-static
+make
+make install
+
+
+libmad-0.15.1b
+patch -Np1 -i ../libmad-0.15.1b-fixes-1.patch
+sed "s@AM_CONFIG_HEADER@AC_CONFIG_HEADERS@g" -i configure.ac
+touch NEWS AUTHORS ChangeLog
+autoreconf -fi
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-debugging --disable-static
+make
+make install
+
+
+madplay-0.15.2b
+./configure --host=arm-none-linux-gnueabi --prefix=$(pwd)/_install --disable-debugging
+make
+make install
+
+
+
+
+cp /home/work/appdir/madplay/madplay-0.15.2b/_install/bin/madplay /home/work/nfs/rootfs/usr/bin/ -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libmad.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libid3tag.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libz.so* /home/work/nfs/rootfs/usr/lib -a
+
+
+
+
+madplay /home/root/Gotta\ Have\ You.mp3
+
+
+
+
