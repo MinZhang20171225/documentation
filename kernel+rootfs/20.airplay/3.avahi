@@ -1,0 +1,74 @@
+
+
+
+route add default gw 192.168.1.1
+
+
+
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/etc/avahi /home/work/nfs/rootfs/etc -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/etc/dbus-1 /home/work/nfs/rootfs/etc -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/share/avahi /home/work/nfs/rootfs/usr/share -a
+avahi-daemon
+
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libavahi-common.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libavahi-core.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libdaemon.so* /home/work/nfs/rootfs/usr/lib -a
+
+
+[root@tq210 /]#pwd
+/
+[root@tq210 /]#ln -s /etc /usr
+[root@tq210 /]#mkdir -p /var/run/avahi //rcS
+[root@tq210 /]#adduser -h /var/run/avahi -s /bin/false -D avahi
+
+
+avahi-daemon.conf
+#disallow-other-stacks=no --> disallow-other-stacks=yes
+
+
+[root@tq210 /]#avahi-daemon &
+
+
+
+
+[root@tq210 /]#avahi-daemon &
+[root@tq210 /]#Found user 'avahi' (UID 1001) and group 'avahi' (GID 1001).
+Successfully dropped root privileges.
+avahi-daemon 0.6.31 starting up.
+WARNING: No NSS support for mDNS detected, consider installing nss-mdns!
+Failed to open /etc/resolv.conf: No such file or directory
+Loading service file /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/etc/avahi/services/sftp-ssh.service.
+Loading service file /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/etc/avahi/services/ssh.service.
+Joining mDNS multicast group on interface eth0.IPv4 with address 192.168.1.6.
+New relevant interface eth0.IPv4 for mDNS.
+Network interface enumeration completed.
+Registering new address record for 192.168.1.6 on eth0.IPv4.
+Registering HINFO record with values 'ARMV7L'/'LINUX'.
+Server startup complete. Host name is tq210.local. Local service cookie is 1824496852.
+Service "tq210" (/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/etc/avahi/services/ssh.service) successfully established.
+Service "tq210" (/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/etc/avahi/services/sftp-ssh.service) successfully established.
+
+
+/etc/resolv.conf
+
+
+[root@tq210 /]#avahi-daemon &
+[root@tq210 /]#Found user 'avahi' (UID 1001) and group 'avahi' (GID 1001).
+Successfully dropped root privileges.
+avahi-daemon 0.6.31 starting up.
+WARNING: No NSS support for mDNS detected, consider installing nss-mdns!
+Loading service file /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/etc/avahi/services/sftp-ssh.service.
+Loading service file /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/etc/avahi/services/ssh.service.
+Joining mDNS multicast group on interface eth0.IPv4 with address 192.168.1.6.
+New relevant interface eth0.IPv4 for mDNS.
+Network interface enumeration completed.
+Registering new address record for 192.168.1.6 on eth0.IPv4.
+Registering HINFO record with values 'ARMV7L'/'LINUX'.
+Server startup complete. Host name is tq210.local. Local service cookie is 1757485632.
+Service "tq210" (/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/etc/avahi/services/ssh.service) successfully established.
+Service "tq210" (/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/etc/avahi/services/sftp-ssh.service) successfully established.
+
+
+
+
+

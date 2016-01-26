@@ -1,0 +1,28 @@
+
+
+
+
+cp scripts/shairport-sync.conf $(prefix)/etc/shairport-sync.conf.sample //...
+
+
+
+
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libavahi-client.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libssl.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libcrypto.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libconfig.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libpopt.so* /home/work/nfs/rootfs/usr/lib -a
+shairport-sync
+
+
+
+
+route add default gw 192.168.1.1
+
+dbus-daemon --system
+avahi-daemon &
+shairport-sync -a test &
+
+
+
+

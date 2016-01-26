@@ -1,0 +1,329 @@
+
+
+
+
+[qiang@CentOS appdir]$ pwd
+/home/work/appdir
+[qiang@CentOS appdir]$ mkdir -p /home/work/nfs/rootfs/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc
+
+[root@tq210 /home/work/cross/arm-2014.05/arm-none-linux-gnueabi]#pwd
+/home/work/cross/arm-2014.05/arm-none-linux-gnueabi
+[root@tq210 /home/work/cross/arm-2014.05/arm-none-linux-gnueabi]#ln -s /usr ./libc
+
+
+
+
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/share/alsa /home/work/nfs/rootfs/usr/share -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libasound.so* /home/work/nfs/rootfs/usr/lib -a
+aplay
+amixer
+
+/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/thumb2/lib
+[qiang@CentOS lib]$ cp libdl* /home/work/nfs/rootfs/lib -a
+[qiang@CentOS lib]$ cp libpthread* /home/work/nfs/rootfs/lib -a
+[qiang@CentOS lib]$ cp libgcc_s* /home/work/nfs/rootfs/lib -a
+[qiang@CentOS lib]$ cp librt* /home/work/nfs/rootfs/lib -a
+
+
+
+
+[root@tq210 /]#aplay /home/root/Front_Center.wav 
+[  383.445530] +i2s_startup(): open OP_CLK
+Playing WAVE '/home/root/Front_Center.wav' : Signed 16 bit Little Endian, Rate 48000 Hz, Mono
+[  383.455807] -smdk_hw_params(): format=2 bfs=32
+[  383.458368] -smdk_hw_params(): rate=48000 rfs=256
+[  383.460729] -smdk_hw_params(): rclk=12288000 psr=4
+[  383.467615] samsung-i2s samsung-i2s.0: RCLK_SRC=49152000Hz PSR=4, RCLK=256fs, BCLK=32fs
+[  384.920426] +i2s_shutdown(): close OP_CLK
+
+
+
+
+numid=5,iface=MIXER,name='Headphone Playback Volume'
+  ; type=INTEGER,access=rw---R--,values=2,min=0,max=127,step=0
+  : values=95,95
+  | dBscale-min=-121.00dB,step=1.00dB,mute=1
+numid=11,iface=MIXER,name='PCM Playback -6dB Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+
+
+[root@tq210 /]#amixer -h
+Usage: amixer <options> [command]
+
+Available options:
+  -h,--help       this help
+  -c,--card N     select the card
+  -D,--device N   select the device, default 'default'
+  -d,--debug      debug mode
+  -n,--nocheck    do not perform range checking
+  -v,--version    print version of this program
+  -q,--quiet      be quiet
+  -i,--inactive   show also inactive controls
+  -a,--abstract L select abstraction level (none or basic)
+  -s,--stdin      Read and execute commands from stdin sequentially
+  -R,--raw-volume Use the raw value (default)
+  -M,--mapped-volume Use the mapped volume
+
+Available commands:
+  scontrols       show all mixer simple controls
+  scontents	  show contents of all mixer simple controls (default command)
+  sset sID P      set contents for one mixer simple control
+  sget sID        get contents for one mixer simple control
+  controls        show all controls for given card
+  contents        show contents of all controls for given card
+  cset cID P      set control contents for one control
+  cget cID        get control contents for one control
+[root@tq210 /]#amixer contents
+numid=6,iface=MIXER,name='Headphone Playback ZC Switch'
+  ; type=BOOLEAN,access=rw------,values=2
+  : values=off,off
+numid=5,iface=MIXER,name='Headphone Playback Volume'
+  ; type=INTEGER,access=rw---R--,values=2,min=0,max=127,step=0
+  : values=95,95
+  | dBscale-min=-121.00dB,step=1.00dB,mute=1
+numid=11,iface=MIXER,name='PCM Playback -6dB Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=35,iface=MIXER,name='Mono Output Mixer Left Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=36,iface=MIXER,name='Mono Output Mixer Right Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=13,iface=MIXER,name='ADC High Pass Filter Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=30,iface=MIXER,name='ADC PCM Capture Volume'
+  ; type=INTEGER,access=rw------,values=2,min=0,max=127,step=0
+  : values=0,0
+numid=12,iface=MIXER,name='ADC Polarity'
+  ; type=ENUMERATED,access=rw------,values=1,items=4
+  ; Item #0 'No Inversion'
+  ; Item #1 'Left Inverted'
+  ; Item #2 'Right Inverted'
+  ; Item #3 'Stereo Inversion'
+  : values=0
+numid=2,iface=MIXER,name='Capture Volume ZC Switch'
+  ; type=INTEGER,access=rw------,values=2,min=0,max=1,step=0
+  : values=0,0
+numid=3,iface=MIXER,name='Capture Switch'
+  ; type=BOOLEAN,access=rw------,values=2
+  : values=on,on
+numid=1,iface=MIXER,name='Capture Volume'
+  ; type=INTEGER,access=rw---R--,values=2,min=0,max=63,step=0
+  : values=23,23
+  | dBscale-min=-97.00dB,step=0.50dB,mute=0
+numid=4,iface=MIXER,name='Playback Volume'
+  ; type=INTEGER,access=rw---R--,values=2,min=0,max=255,step=0
+  : values=255,255
+  | dBscale-min=-127.00dB,step=0.50dB,mute=1
+numid=17,iface=MIXER,name='3D Filter Lower Cut-Off'
+  ; type=ENUMERATED,access=rw------,values=1,items=2
+  ; Item #0 'Low'
+  ; Item #1 'High'
+  : values=0
+numid=16,iface=MIXER,name='3D Filter Upper Cut-Off'
+  ; type=ENUMERATED,access=rw------,values=1,items=2
+  ; Item #0 'High'
+  ; Item #1 'Low'
+  : values=0
+numid=19,iface=MIXER,name='3D Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=18,iface=MIXER,name='3D Volume'
+  ; type=INTEGER,access=rw------,values=1,min=0,max=15,step=0
+  : values=0
+numid=27,iface=MIXER,name='ALC Attack'
+  ; type=INTEGER,access=rw------,values=1,min=0,max=15,step=0
+  : values=2
+numid=26,iface=MIXER,name='ALC Decay'
+  ; type=INTEGER,access=rw------,values=1,min=0,max=15,step=0
+  : values=3
+numid=20,iface=MIXER,name='ALC Function'
+  ; type=ENUMERATED,access=rw------,values=1,items=4
+  ; Item #0 'Off'
+  ; Item #1 'Right'
+  ; Item #2 'Left'
+  ; Item #3 'Stereo'
+  : values=0
+numid=24,iface=MIXER,name='ALC Hold Time'
+  ; type=INTEGER,access=rw------,values=1,min=0,max=15,step=0
+  : values=0
+numid=21,iface=MIXER,name='ALC Max Gain'
+  ; type=INTEGER,access=rw------,values=1,min=0,max=7,step=0
+  : values=7
+numid=23,iface=MIXER,name='ALC Min Gain'
+  ; type=INTEGER,access=rw------,values=1,min=0,max=7,step=0
+  : values=0
+numid=25,iface=MIXER,name='ALC Mode'
+  ; type=ENUMERATED,access=rw------,values=1,items=2
+  ; Item #0 'ALC'
+  ; Item #1 'Limiter'
+  : values=0
+numid=22,iface=MIXER,name='ALC Target'
+  ; type=INTEGER,access=rw------,values=1,min=0,max=15,step=0
+  : values=4
+numid=15,iface=MIXER,name='DAC Deemphasis Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=14,iface=MIXER,name='DAC Polarity'
+  ; type=ENUMERATED,access=rw------,values=1,items=2
+  ; Item #0 'High'
+  ; Item #1 'Low'
+  : values=0
+numid=50,iface=MIXER,name='Left Boost Mixer LINPUT1 Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+numid=48,iface=MIXER,name='Left Boost Mixer LINPUT2 Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=49,iface=MIXER,name='Left Boost Mixer LINPUT3 Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=44,iface=MIXER,name='Left Input Mixer Boost Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=42,iface=MIXER,name='Left Output Mixer Boost Bypass Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=31,iface=MIXER,name='Left Output Mixer Boost Bypass Volume'
+  ; type=INTEGER,access=rw---R--,values=1,min=0,max=7,step=0
+  : values=2
+  | dBscale-min=-21.00dB,step=3.00dB,mute=0
+numid=41,iface=MIXER,name='Left Output Mixer LINPUT3 Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=32,iface=MIXER,name='Left Output Mixer LINPUT3 Volume'
+  ; type=INTEGER,access=rw---R--,values=1,min=0,max=7,step=0
+  : values=2
+  | dBscale-min=-21.00dB,step=3.00dB,mute=0
+numid=40,iface=MIXER,name='Left Output Mixer PCM Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+numid=29,iface=MIXER,name='Noise Gate Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=28,iface=MIXER,name='Noise Gate Threshold'
+  ; type=INTEGER,access=rw------,values=1,min=0,max=31,step=0
+  : values=0
+numid=47,iface=MIXER,name='Right Boost Mixer RINPUT1 Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+numid=45,iface=MIXER,name='Right Boost Mixer RINPUT2 Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=46,iface=MIXER,name='Right Boost Mixer RINPUT3 Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=43,iface=MIXER,name='Right Input Mixer Boost Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=39,iface=MIXER,name='Right Output Mixer Boost Bypass Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=33,iface=MIXER,name='Right Output Mixer Boost Bypass Volume'
+  ; type=INTEGER,access=rw---R--,values=1,min=0,max=7,step=0
+  : values=2
+  | dBscale-min=-21.00dB,step=3.00dB,mute=0
+numid=37,iface=MIXER,name='Right Output Mixer PCM Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+numid=38,iface=MIXER,name='Right Output Mixer RINPUT3 Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=34,iface=MIXER,name='Right Output Mixer RINPUT3 Volume'
+  ; type=INTEGER,access=rw---R--,values=1,min=0,max=7,step=0
+  : values=2
+  | dBscale-min=-21.00dB,step=3.00dB,mute=0
+numid=10,iface=MIXER,name='Speaker AC Volume'
+  ; type=INTEGER,access=rw------,values=1,min=0,max=5,step=0
+  : values=0
+numid=9,iface=MIXER,name='Speaker DC Volume'
+  ; type=INTEGER,access=rw------,values=1,min=0,max=5,step=0
+  : values=0
+numid=7,iface=MIXER,name='Speaker Playback Volume'
+  ; type=INTEGER,access=rw---R--,values=2,min=0,max=127,step=0
+  : values=0,0
+  | dBscale-min=-121.00dB,step=1.00dB,mute=1
+numid=8,iface=MIXER,name='Speaker Playback ZC Switch'
+  ; type=BOOLEAN,access=rw------,values=2
+  : values=off,off
+[root@tq210 /]#amixer controls
+numid=6,iface=MIXER,name='Headphone Playback ZC Switch'
+numid=5,iface=MIXER,name='Headphone Playback Volume'
+numid=11,iface=MIXER,name='PCM Playback -6dB Switch'
+numid=35,iface=MIXER,name='Mono Output Mixer Left Switch'
+numid=36,iface=MIXER,name='Mono Output Mixer Right Switch'
+numid=13,iface=MIXER,name='ADC High Pass Filter Switch'
+numid=30,iface=MIXER,name='ADC PCM Capture Volume'
+numid=12,iface=MIXER,name='ADC Polarity'
+numid=2,iface=MIXER,name='Capture Volume ZC Switch'
+numid=3,iface=MIXER,name='Capture Switch'
+numid=1,iface=MIXER,name='Capture Volume'
+numid=4,iface=MIXER,name='Playback Volume'
+numid=17,iface=MIXER,name='3D Filter Lower Cut-Off'
+numid=16,iface=MIXER,name='3D Filter Upper Cut-Off'
+numid=19,iface=MIXER,name='3D Switch'
+numid=18,iface=MIXER,name='3D Volume'
+numid=27,iface=MIXER,name='ALC Attack'
+numid=26,iface=MIXER,name='ALC Decay'
+numid=20,iface=MIXER,name='ALC Function'
+numid=24,iface=MIXER,name='ALC Hold Time'
+numid=21,iface=MIXER,name='ALC Max Gain'
+numid=23,iface=MIXER,name='ALC Min Gain'
+numid=25,iface=MIXER,name='ALC Mode'
+numid=22,iface=MIXER,name='ALC Target'
+numid=15,iface=MIXER,name='DAC Deemphasis Switch'
+numid=14,iface=MIXER,name='DAC Polarity'
+numid=50,iface=MIXER,name='Left Boost Mixer LINPUT1 Switch'
+numid=48,iface=MIXER,name='Left Boost Mixer LINPUT2 Switch'
+numid=49,iface=MIXER,name='Left Boost Mixer LINPUT3 Switch'
+numid=44,iface=MIXER,name='Left Input Mixer Boost Switch'
+numid=42,iface=MIXER,name='Left Output Mixer Boost Bypass Switch'
+numid=31,iface=MIXER,name='Left Output Mixer Boost Bypass Volume'
+numid=41,iface=MIXER,name='Left Output Mixer LINPUT3 Switch'
+numid=32,iface=MIXER,name='Left Output Mixer LINPUT3 Volume'
+numid=40,iface=MIXER,name='Left Output Mixer PCM Playback Switch'
+numid=29,iface=MIXER,name='Noise Gate Switch'
+numid=28,iface=MIXER,name='Noise Gate Threshold'
+numid=47,iface=MIXER,name='Right Boost Mixer RINPUT1 Switch'
+numid=45,iface=MIXER,name='Right Boost Mixer RINPUT2 Switch'
+numid=46,iface=MIXER,name='Right Boost Mixer RINPUT3 Switch'
+numid=43,iface=MIXER,name='Right Input Mixer Boost Switch'
+numid=39,iface=MIXER,name='Right Output Mixer Boost Bypass Switch'
+numid=33,iface=MIXER,name='Right Output Mixer Boost Bypass Volume'
+numid=37,iface=MIXER,name='Right Output Mixer PCM Playback Switch'
+numid=38,iface=MIXER,name='Right Output Mixer RINPUT3 Switch'
+numid=34,iface=MIXER,name='Right Output Mixer RINPUT3 Volume'
+numid=10,iface=MIXER,name='Speaker AC Volume'
+numid=9,iface=MIXER,name='Speaker DC Volume'
+numid=7,iface=MIXER,name='Speaker Playback Volume'
+numid=8,iface=MIXER,name='Speaker Playback ZC Switch'
+[root@tq210 /]#
+
+
+[qiang@CentOS ~]$ amixer controls
+numid=4,iface=MIXER,name='Master Playback Switch'
+numid=3,iface=MIXER,name='Master Playback Volume'
+numid=2,iface=MIXER,name='Capture Switch'
+numid=1,iface=MIXER,name='Capture Volume'
+[qiang@CentOS ~]$ amixer contents
+numid=4,iface=MIXER,name='Master Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+numid=3,iface=MIXER,name='Master Playback Volume'
+  ; type=INTEGER,access=rw------,values=2,min=0,max=65536,step=1
+  : values=65536,65536
+numid=2,iface=MIXER,name='Capture Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+numid=1,iface=MIXER,name='Capture Volume'
+  ; type=INTEGER,access=rw------,values=2,min=0,max=65536,step=1
+  : values=655,655
+[qiang@CentOS ~]$
+
+
+
+
+

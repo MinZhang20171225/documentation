@@ -1,0 +1,72 @@
+
+
+
+当系统启动时，需要使用dbus-launch来启动dbus-daemon，一般而言，
+一般采用下面的命令启动dbus daemon以及dbus application
+(1) eval `dbus-launch --auto-syntax`
+(2) ./yourapp
+第一行代码，采用eval来执行两次，第一次执行dbus-lauch --auto-syntax，除了启动dbus daemon之外，还输出了下面的内容：
+DBUS_SESSION_BUS_ADDRESS='unix:path=/tmp/dbus-6Z62FMmwf3,guid=5dbd92e4865a3f56880d2120000000d6';
+export DBUS_SESSION_BUS_ADDRESS;
+DBUS_SESSION_BUS_PID=998;
+第二次执行时就将环境变量DBUS_SESSION_BUS_ADDRESS暴露出去了。所有的dbus application在注册DBUS服务时，必须知道这个DBUS_SESSION_BUS_ADDRESS的数据。
+在第二行执行自己的dbus application的时候，根据DBUS_SESSION_BUS_ADDRESS环境变量，能够找到session bus进行注册和通讯。
+
+
+
+route add default gw 192.168.1.1
+
+
+
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/share/dbus-1 /home/work/nfs/rootfs/usr/share -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libdbus-1.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/libexpat.so* /home/work/nfs/rootfs/usr/lib -a
+dbus-daemon
+dbus-launch
+
+
+[root@tq210 /]#pwd
+/
+[root@tq210 /]#ln -s /var /usr
+[root@tq210 /]#mkdir -p /var/run/dbus //rcS
+[root@tq210 /]#adduser -h /var/run/dbus -s /bin/false -D messagebus
+
+
+
+
+1.
+[root@tq210 /]#dbus-daemon --system
+Could not get password database information for UID of current process: User "???" unknown or no memory to allocate password entry
+
+Unknown username "root" in message bus configuration file
+Failed to start message bus: Could not get UID and GID for username "messagebus"
+
+问题原因：
+
+情况一：系统帐户验证出现问题.怀疑是调用getuid、getguid时并没有返回正确值,可能是缺少帐户验证相关库,实际排查后发现，缺少libnss_files库。拷贝交叉编译器的libnss_files库到文件系统后，启动文件系统成功。
+/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/thumb2/lib
+[qiang@CentOS lib]$ cp libnss_files* /home/work/nfs/rootfs/lib -a
+
+情况二：系统没有root帐号。可以由whoami命令看出。
+手动创建帐号。
+#vi /etc/passwd
+root:x:0:0:root:/root:/bin/sh
+kyo:x:500:500:kyo:/home/kyo:/bin/bash
+添加组
+#vi group
+root:x:0:root
+
+2.(shairport忽略此步骤)
+[root@tq210 /]#eval `dbus-launch --auto-syntax`
+DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/dbus-K6sLp0iihG,guid=dc284b198983c167d7b5a11a0000001e
+
+
+
+
+[root@tq210 /]#dbus-daemon --system
+Unknown group "netdev" in message bus configuration file
+
+
+
+
+

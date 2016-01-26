@@ -1,0 +1,7 @@
+apt-get install autoconf libtool libdaemon-dev libasound2-dev libpopt-dev
+apt-get install avahi-daemon libavahi-client-dev
+apt-get install libssl-dev
+
+
+autoreconf -i -f
+./configure --with-alsa --with-avahi --with-ssl=openssl --prefix=$(pwd)/_install

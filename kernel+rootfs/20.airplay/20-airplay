@@ -1,0 +1,161 @@
+
+
+--prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+
+
+libffi-3.2.1
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static
+make
+make install
+
+
+zlib-1.2.3
+CC=arm-none-linux-gnueabi-gcc CFLAGS="-mthumb -march=armv7-a -fPIC -Wall -O" AR="arm-none-linux-gnueabi-ar rc" RANLIB=arm-none-linux-gnueabi-ranlib ./configure  --shared --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr
+make
+make install
+
+
+glib-2.46.1
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr \
+glib_cv_stack_grows=no \
+glib_cv_uscore=no \
+ac_cv_func_posix_getpwuid_r=yes \
+ac_cv_func_posix_getgrgid_r=yes \
+ac_cv_lib_rt_clock_gettime=no \
+glib_cv_monotonic_clock=yes
+make
+make install
+
+
+expat-2.1.0
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static
+make
+make install
+
+
+1.
+dbus-1.10.0_install
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=$(pwd)/_install --disable-static
+make
+make install
+2.
+dbus-1.10.0
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static
+make
+make install
+
+
+libdaemon-0.14
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static ac_cv_func_setpgrp_void=yes --cache=arm-none-linux-gnueabi.cache
+make
+make install
+
+
+1.
+avahi-0.6.31_install
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=$(pwd)/_install \
+--disable-static \
+--with-distro=none \
+--disable-gdbm \
+--disable-qt3 \
+--disable-qt4 \
+--disable-gtk \
+--disable-gtk3 \
+--disable-python \
+--disable-mono \
+--disable-monodoc \
+--with-systemdsystemunitdir=$(pwd)/_install/usr/lib/systemd/system
+make
+make install
+2.
+avahi-0.6.31
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr \
+--disable-static \
+--with-distro=none \
+--disable-gdbm \
+--disable-qt3 \
+--disable-qt4 \
+--disable-gtk \
+--disable-gtk3 \
+--disable-python \
+--disable-mono \
+--disable-monodoc \
+--with-systemdsystemunitdir=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/systemd/system
+make
+make install
+
+
+popt-1.16
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static
+make
+make install
+
+
+libconfig-1.5
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr --disable-static
+make
+make install
+
+
+openssl-1.0.2c
+AR=arm-none-linux-gnueabi-ar RANLIB=arm-none-linux-gnueabi-ranlib CC=arm-none-linux-gnueabi-gcc ./Configure no-asm shared linux-elf --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr
+make
+make install
+
+
+1.
+alsa-lib-1.0.28_install
+./configure --host=arm-none-linux-gnueabi --prefix=$(pwd)/_install
+make
+make install
+2.
+alsa-lib-1.0.28
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr
+make
+make install
+
+
+1.
+alsa-utils-1.0.28_install
+./configure --host=arm-none-linux-gnueabi --prefix=$(pwd)/_install \
+--disable-alsamixer \
+--disable-xmlto \
+--with-systemdsystemunitdir=$(pwd)/_install/usr/lib/systemd/system \
+--with-udev-rules-dir=$(pwd)/_install/usr/lib/udev/rules.d
+make
+make install
+2.
+alsa-utils-1.0.28
+./configure --host=arm-none-linux-gnueabi --prefix=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr \
+--disable-alsamixer \
+--disable-xmlto \
+--with-systemdsystemunitdir=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/systemd/system \
+--with-udev-rules-dir=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/udev/rules.d
+make
+make install
+
+
+shairport-sync
+autoreconf -i -f
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+./configure --host=arm-none-linux-gnueabi --prefix=$(pwd)/_install \
+--with-alsa \
+--with-avahi \
+--with-ssl=openssl \
+--with-pkg-config \
+ac_cv_func_malloc_0_nonnull=yes \
+ac_cv_func_realloc_0_nonnull=yes \
+--cache=arm-none-linux-gnueabi.cache
+make
+
+
+
+
+
+
