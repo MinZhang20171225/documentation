@@ -1,0 +1,6 @@
+
+
+mount -t vfat /dev/mmcblk0p1 /mnt
+mount -t nfs -o nolock 192.168.1.8:/home/work/nfs/rootfs /mnt/nfs
+
+

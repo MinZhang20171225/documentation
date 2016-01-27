@@ -1,0 +1,12 @@
+
+
+/tmp/mnt # cat /proc/sys/kernel/random/uuid 
+29a7f6d9-50c1-49c2-adc9-de12752ce2bb
+
+
+ps -ef|grep 'MediaRendererTest'|grep -v grep
+
+
+
+
+
