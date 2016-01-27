@@ -1,0 +1,45 @@
+
+
+platinum
+
+
+libs = GetLibraries(deps)+['gstreamer-1.0', 'gobject-2.0', 'glib-2.0']
+
+cpp_path = GetIncludeDirs(deps)+['/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/include/gstreamer-1.0', '/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/gstreamer-1.0/include', '/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/include/glib-2.0', '/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/glib-2.0/include', '/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/include']
+
+cpp_path = GetIncludeDirs(deps)+['/usr/include/gstreamer-1.0', '/usr/include/glib-2.0', '/usr/lib64/glib-2.0/include', '/usr/include']
+
+
+scons target=x86-unknown-linux build_config=Debug
+
+scons target=arm-unknown-linux build_config=Release
+scons target=arm-unknown-linux build_config=Release -c
+
+
+cp Targets/arm-unknown-linux/Release/MediaRendererTest /home/work/nfs/rootfs/usr/bin/ -a
+cp Targets/arm-unknown-linux/Release/FileMediaServerTest /home/work/nfs/rootfs/usr/bin/ -a
+
+
+
+usage: MediaRendererTest [-f <friendly_name>]
+    -f : optional upnp server friendly name
+usage: FileMediaServerTest [-f <friendly_name>] [-p <port>] [-g <guid>] <path>
+-f : optional upnp device friendly name
+-p : optional http port
+<path> : local path to serve
+
+
+FileMediaServerTest -f TQ210_dms /home &
+MediaRendererTest -f TQ210_dmr &
+
+
+
+
+
+
+
+
+
+
+
+
