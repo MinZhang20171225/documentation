@@ -1,0 +1,205 @@
+
+
+/home/work/nfs/rootfs/lib/firmware/rt2870.bin
+[root@tq210 /]#ifconfig wlan0 up
+[ 7071.197194] phy0 -> rt2x00lib_request_firmware: Info - Loading firmware file 'rt2870.bin'.
+[ 7071.218974] phy0 -> rt2x00lib_request_firmware: Info - Firmware detected - version: 0.33.
+[ 7071.432046] phy0 -> rt2x00mac_conf_tx: Info - Configured TX queue 0 - CWmin: 3, CWmax: 4, Aifs: 2, TXop: 102.
+[ 7071.438642] phy0 -> rt2x00mac_conf_tx: Info - Configured TX queue 1 - CWmin: 4, CWmax: 5, Aifs: 2, TXop: 188.
+[ 7071.445641] phy0 -> rt2x00mac_conf_tx: Info - Configured TX queue 2 - CWmin: 5, CWmax: 10, Aifs: 3, TXop: 0.
+[ 7071.452769] phy0 -> rt2x00mac_conf_tx: Info - Configured TX queue 3 - CWmin: 5, CWmax: 10, Aifs: 7, TXop: 0.
+
+
+
+
+
+
+.bashrc
+#export PATH=$PATH:/home/work/cross/arm-2014.05/bin
+export PATH=$PATH:/home/work/cross/arm-2014.05-ref/bin
+source ~/.bashrc
+
+
+
+
+
+
+wireless_tools
+makefile:
+CC = arm-none-linux-gnueabi-gcc
+AR = arm-none-linux-gnueabi-ar
+RANLIB = arm-none-linux-gnueabi-ranlib
+make 
+
+
+cp /home/work/appdir/wirelesstool/wireless_tools.29/libiw.so.29 /home/work/nfs/rootfs/usr/lib -a
+iwlist
+iwconfig
+iwpriv
+
+
+(ap不需要验证密码)
+ifconfig wlan0 up
+iwlist wlan0 scan //搜索ap
+iwconfig wlan0 essid "gaoqiang" //连接ap
+获得动态IP
+
+(ap需要验证密码)
+当在无线“基本设置”里面“安全认证类型”选择“自动选择”、“开放系统”、“共享密钥”这三项的时，使用的就是WEP加密技术，“自动选择”是无线路由器可以和客户端自动协商成“开放系统”或者“共享密钥”。
+
+key/enc[ryption]：设置无线网卡使用的加密密钥，此处为设置WEP模式的加密key，如果要使用WPA，需要wpa_supplicant工具包。密钥参数可以是 XXXX-XXXX-XXXX-XXXX 或者 XXXXXXXX 格式的十六进制数值，也可以是s:xxxxxx的ASCII字符。如果在密钥参数之前加了[index]，则只是设置该索引值对应的密钥，并不改变当前的密钥。直接指定[index]值可以设置当前使用哪一个密钥。指定on/off可以控制是否使用加密模式。open/restricted指定加密模式，取决于不同的无线网卡，大多数无线网卡的open模式不使用加密且允许接收没有加密的数据包，restricted模式使用加密。可以使用多个key参数，但只有最后一个生效。
+WEP密钥可以是40bit，用10个十六进制数字或者5个ASCII字符表示，也可以是128bit，用26个十六进制数字或者13个ASCII字符表示。
+示例：
+#iwconfig eth0 key 0123-4567-89
+#iwconfig eth0 key [3] 0123-4567-89
+#iwconfig eth0 key s:password [2]
+#iwconfig eth0 key [2]
+#iwconfig eth0 key open
+#iwconfig eth0 key off
+#iwconfig eth0 key restricted [3] 0123456789
+#iwconfig eth0 key 01-23 key 45-67 [4] key [4]
+	#iwconfig ath0 key 1111-2222-33 
+　　　 #iwconifg ath0 key [2] 1111-2222-33 
+　　　 #iwconfig ath0 key s:password [3]   #设置索引值[3]对应的密钥为password 
+　　　 #iwconfig ath0 key [3]      　　　#使用索引值[3]里面的密钥 
+　　　 #iwconfig ath0 key open     　　　#开启加密功能 
+　　　 #iwconfig ath0 key off      　　　#关闭加密功能 
+
+ascii 64bit
+iwlist ra0 scan //搜索ap
+iwconfig ra0 key s:10585  // 输入验证密码
+iwconfig ra0 key open //密码验证功能打开
+iwconfig ra0 essid "gaoqiang" //连接ap
+//获得动态IP
+hex 64bit
+iwlist ra0 scan //搜索ap
+iwconfig ra0 key 1058577353  // 输入验证密码
+or iwconfig ra0 key 1058-5773-53  // 输入验证密码
+iwconfig ra0 key open //密码验证功能打开
+iwconfig ra0 essid "gaoqiang" //连接ap
+//获得动态IP
+
+断开WEP：
+iwconfig ra0 enc off XX 如何断开连接？
+
+
+
+
+
+
+
+
+
+libnl
+./configure --host=arm-none-linux-gnueabi --prefix=$(pwd)/_install
+make 
+make install
+
+
+iw-3.13
+export PKG_CONFIG_PATH=/home/work/appdir/libnl/libnl-3.2.23/_install/lib/pkgconfig
+make CC=arm-none-linux-gnueabi-gcc
+
+
+cp /home/work/appdir/libnl/libnl-3.2.23/_install/lib/libnl-genl-3.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/appdir/libnl/libnl-3.2.23/_install/lib/libnl-3.so* /home/work/nfs/rootfs/usr/lib -a
+iw
+
+
+iw list
+iw dev wlan0 scan
+
+
+
+
+
+
+
+
+
+
+openssl-0.9.8x
+
+把wpa_supplicant里面的patches文件夹下的openssl-0.9.8x-tls-extensions.patch文件拷贝到openssl-0.9.8x目录上层
+[qiang@CentOS openssl-0.9.8x]$ patch -p1 < ../openssl-0.9.8x-tls-extensions.patch 
+
+AR=arm-none-linux-gnueabi-ar RANLIB=arm-none-linux-gnueabi-ranlib CC=arm-none-linux-gnueabi-gcc ./Configure no-asm shared --prefix=$(pwd)/_install linux-elf
+
+POD document had syntax errors at /usr/bin/pod2man line 69.
+install: all install_docs install_sw
+修改Makefile，删除install_docs
+
+make 
+make install
+
+
+
+wpa_supplicant
+cp defconfig .config
+修改.config, 加一行: CONFIG_LIBNL32=y
+修改Makefile
+CFLAGS += -I/home/work/appdir/libnl/libnl-3.2.23/_install/include/libnl3
+LDFLAGS += -L/home/work/appdir/libnl/libnl-3.2.23/_install/lib
+CFLAGS += -I/home/work/appdir/openssl-wifi/openssl-0.9.8x/_install/include
+LDFLAGS += -L/home/work/appdir/openssl-wifi/openssl-0.9.8x/_install/lib
+
+make CC=arm-none-linux-gnueabi-gcc
+
+把生成的wpa_supplicant复制到NFS的usr/bin目录
+cp /home/work/appdir/openssl-wifi/openssl-0.9.8x/_install/lib/libssl.so.0.9.8 /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/appdir/openssl-wifi/openssl-0.9.8x/_install/lib/libcrypto.so.0.9.8 /home/work/nfs/rootfs/usr/lib -a
+
+cp wpa_supplicant/examples/wpa-psk-tkip.conf   wpa_supplicant.conf
+wpa_supplicant.conf放在/etc目录下，对wpa_supplicant.conf文件进行编辑：
+
+ctrl_interface=/var/run/wpa_supplicant
+network={
+        ssid="idart-wlan311"
+        scan_ssid=1
+        key_mgmt=WPA-EAP WPA-PSK IEEE8021X NONE
+        pairwise=TKIP CCMP
+        group=CCMP TKIP WEP104 WEP40
+        psk="XXXXXXXX"
+}
+注意上面ssid要和无线路由的名字相同，psk为无线路由的密码。无线路由使用WPA或WPA2的加密方式。
+
+
+在文件系统建立无线网卡运行目录：
+[root@tq210 /]#mkdir -p /var/run/wpa_supplicant //rcS
+
+wpa_supplicant -Dwext -iwlan0 -c /etc/wpa_supplicant.conf -B -d &
+-d = increase debugging verbosity (-dd even more)
+-B = run daemon in the background
+&表示到后台执行这组命令
+
+
+
+
+
+
+
+
+
+手动配置ip地址
+ifconfig wlan0 192.168.1.9 netmask 255.255.255.0
+自动获取ip地址
+cp ~/busybox-1.14.3/examples/udhcp/simple.script usr/share/udhcpc/default.script
+/etc/resolv.conf
+udhcpc -b -i wlan0 -h ralink -R &
+udhcpc -b -i wlan0 -x hostname:ralink -R &
+
+
+[root@tq210 /]#route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.1.1     0.0.0.0         UG    0      0        0 wlan0
+192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 wlan0
+
+
+
+
+
+
+
+
