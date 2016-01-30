@@ -1,0 +1,28 @@
+
+网络配置
+
+在bootloader中设置的开发板IP地址仅在bootloader阶段与主机通信时起作用。
+
+1.若是NFS Root方式启动，系统启动后的IP地址是由内核启动参数中的NFS设置决定的，这样系统启动后仍然可以读取主机的NFS导出目录。
+
+2.若是Nand Flash根文件系统启动，则启动后需重新配置IP地址和激活网络接口，我们可以把配置写在启动脚本～/rootfs/etc/init.d/rcS中
+添加
+ifconfig lo 127.0.0.1
+静态：
+ifconfig eth0 192.168.1.6 broadcast 192.168.1.255 netmask 255.255.255.0
+route add default gw 192.168.1.1
+动态：
+ifconfig eth0 up
+udhcpc -b -i eth0 -x hostname:tq210 -R &
+
+
+
+
+
+
+
+
+
+
+
+
