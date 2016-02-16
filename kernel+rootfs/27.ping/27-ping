@@ -1,0 +1,8 @@
+解决无法ping域名问题
+[@TestHost /]#ping www.baidu.com -c 9
+ping: bad address 'www.baidu.com'
+LIBC NSS 
+When used with glibc, the BusyBox 'networking' applets will similarly require that you install at least some of the glibc NSS stuff (in particular, /etc/nsswitch.conf, /lib/libnss_dns*, /lib/libnss_files*, and /lib/libresolv*).
+
+/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/thumb2/lib
+[qiang@CentOS lib]$ cp libnss_dns* /home/work/nfs/rootfs/lib -a
