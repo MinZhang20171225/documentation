@@ -200,6 +200,16 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 
 
 
+STA模式
+1.启用wlan0
+ifconfig wlan0 up
+2.启动wpa_supplicant
+mkdir -p /var/run/wpa_supplicant //rcS
+wpa_supplicant -Dwext -iwlan0 -c /etc/wpa_supplicant.conf -B -d &
+3.启动udhcpc
+udhcpc -b -i wlan0 -x hostname:ralink -R &
+
+
 
 
 
