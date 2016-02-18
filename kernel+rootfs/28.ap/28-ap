@@ -1,0 +1,75 @@
+
+
+
+.bashrc
+#export PATH=$PATH:/home/work/cross/arm-2014.05/bin
+export PATH=$PATH:/home/work/cross/arm-2014.05-ref/bin
+source ~/.bashrc
+
+
+
+hostapd-2.0
+cp defconfig .config 
+修改.config, 加一行: CONFIG_LIBNL32=y
+修改Makefile
+CFLAGS += -I/home/work/appdir/libnl/libnl-3.2.23/_install/include/libnl3
+LDFLAGS += -L/home/work/appdir/libnl/libnl-3.2.23/_install/lib
+CFLAGS += -I/home/work/appdir/openssl-wifi/openssl-0.9.8x/_install/include
+LDFLAGS += -L/home/work/appdir/openssl-wifi/openssl-0.9.8x/_install/lib
+
+make CC=arm-none-linux-gnueabi-gcc
+
+把生成的hostapd  hostapd_cli复制到NFS的usr/bin目录
+
+新建/etc/hostapd/hostapd.conf 
+
+interface=wlan0
+driver=nl80211
+ssid=RT3070
+channel=9
+hw_mode=g
+macaddr_acl=0
+ignore_broadcast_ssid=0
+auth_algs=1
+wpa=3
+wpa_passphrase=1058577353
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+
+最后执行：hostapd -d /etc/hostapd/hostapd.conf &
+
+
+
+udhcpd
+/etc/udhcpd.conf 
+
+
+
+softap模式（无线局域网）
+1.wlan0配置静态IP
+ifconfig wlan0 192.168.17.1
+2.启动udhcpd
+mkdir -p /var/lib/misc/  //rcS
+touch /var/lib/misc/udhcpd.leases  //rcS
+udhcpd -fS /etc/udhcpd.conf &
+3.启动hostapd
+hostapd -d /etc/hostapd/hostapd.conf &
+注：终端可以和AP相互ping通，终端之间ping通
+		    tq210
+ 			|
+		|		|
+	     zte	     h60
+tq210(192.168.17.1)：
+ping 192.168.17.100 -c 9 //h60
+ping 192.168.17.101 -c 9 //zte
+h60(192.168.17.100)：
+ping 192.168.17.1 //tq210
+ping 192.168.17.101 //zte
+zte(192.168.17.101)：
+ping 192.168.17.1 //tq210
+ping 192.168.17.100 //h60
+
+
+
+
