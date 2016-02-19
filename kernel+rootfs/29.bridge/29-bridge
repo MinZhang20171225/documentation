@@ -1,0 +1,108 @@
+
+
+
+
+add bridge failed: Package not installed
+Networking support->Networking options->802.1d Ethernet Bridging
+
+在执行桥接命令时出现cant add wlan0 to bridge br0: Operation not supported。这是由于您的无线网卡没有处于AP模式。处于Managed模式的无线网卡无法进行桥接
+
+
+
+
+softap模式（可以通过有线上网）
+1.启用wlan0
+ifconfig wlan0 up
+2.启动hostapd
+hostapd -d /etc/hostapd/hostapd.conf &
+3.网桥配置（考虑NFS挂载的情况）
+brctl addbr br0
+ifconfig br0 192.168.1.6 netmask 255.255.255.0 //原eth0的IP
+brctl addif br0 eth0
+brctl addif br0 wlan0 
+ifconfig eth0 0.0.0.0
+route add default gw 192.168.1.1
+
+udhcpc -b -i br0 -h bridge -R &
+
+		route
+		   |
+	|			|
+	pc		    tq210
+	  			|
+			|		|
+		     zte	     h60
+tq210(192.168.1.6)：
+ping 192.168.1.1 -c 9 //route
+ping 192.168.1.8 -c 9 //pc
+ping 192.168.1.101 -c 9 //zte
+ping 192.168.1.104 -c 9 //h60
+pc(192.168.1.8)：
+ping 192.168.1.6 -c 9 //tq210
+ping 192.168.1.101 -c 9 //zte
+ping 192.168.1.104 -c 9 //h60
+zte(192.168.1.101)：
+ping 192.168.1.1 -c 9 //gw
+ping 192.168.1.8 -c 9 //pc
+ping 192.168.1.6 -c 9 //tq210
+ping 192.168.1.104 -c 9 //h60
+
+新的路由项
+需要注意的是，在完成桥接设置后，你需要重新设置路由表，使得default指向br0而不是eth0。要做到这一点，最方便的做法（如果你在一个使用dhcp的网络环境下）是使用dhcpcd -k eth0 && dhcpcd br0来重新设置路由。如果没有DHCP，那您需要手动删除eth0上绑定的IP地址，并在br0上进行设置，最后更改相应的路由表项。
+
+[root@tq210 /]#route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.1.1     0.0.0.0         UG    0      0        0 br0
+192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 br0
+[root@tq210 /]#ifconfig
+br0       Link encap:Ethernet  HWaddr 00:09:C0:FF:EC:48  
+          inet addr:192.168.1.6  Bcast:192.168.1.255  Mask:255.255.255.0
+          inet6 addr: fe80::b413:b1ff:feba:6552/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:109 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:96 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:56230 (54.9 KiB)  TX bytes:23692 (23.1 KiB)
+
+eth0      Link encap:Ethernet  HWaddr 00:09:C0:FF:EC:48  
+          inet6 addr: fe80::209:c0ff:feff:ec48/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:8941 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:7290 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:12347417 (11.7 MiB)  TX bytes:920116 (898.5 KiB)
+          Interrupt:42 Base address:0x6300 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wlan0     Link encap:Ethernet  HWaddr 00:25:22:3E:8E:D3  
+          inet6 addr: fe80::225:22ff:fe3e:8ed3/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:13 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:1128 (1.1 KiB)
+[root@tq210 /]#iwconfig
+lo        no wireless extensions.
+
+br0       no wireless extensions.
+
+wlan0     IEEE 802.11bgn  Mode:Master  Frequency:2.452 GHz  Tx-Power=20 dBm   
+          Retry  long limit:7   RTS thr:off   Fragment thr:off
+          Power Management:on
+          
+eth0      no wireless extensions.
+
+
+
+
+
+
