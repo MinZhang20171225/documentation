@@ -1,0 +1,171 @@
+
+
+tar -xzvf alljoyn-suite-14.06.00a-src.tar.gz
+tar -xzvf audio.tar.gz -C alljoyn-suite-14.06.00a-src/core/alljoyn/services/
+cd alljoyn-suite-14.06.00a-src/core/alljoyn/services/audio/
+
+
+//###################### PC ########################//
+scons BINDINGS=core,cpp SERVICES=about,audio WS=off V=1 VARIANT=release
+
+export LD_LIBRARY_PATH=/home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src/core/alljoyn/services/audio/build/linux/x86_64/release/dist/audio/lib:/home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src/core/alljoyn/services/audio/build/linux/x86_64/release/dist/about/lib:/home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src/core/alljoyn/services/audio/build/linux/x86_64/release/dist/cpp/lib:$LD_LIBRARY_PATH
+
+cd /home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src/core/alljoyn/services/audio/build/linux/x86_64/release/dist/cpp/bin
+./alljoyn-daemon
+
+cd /home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src/core/alljoyn/services/audio/build/linux/x86_64/release/dist/audio/bin/samples
+./SinkService "Friendly Name"
+./SinkClient v_stand.wav
+
+
+scons BINDINGS=core,cpp SERVICES=about,audio WS=off V=1
+
+export LD_LIBRARY_PATH=/home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src/core/alljoyn/services/audio/build/linux/x86_64/debug/dist/audio/lib:/home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src/core/alljoyn/services/audio/build/linux/x86_64/debug/dist/about/lib:/home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src/core/alljoyn/services/audio/build/linux/x86_64/debug/dist/cpp/lib:$LD_LIBRARY_PATH
+
+cd /home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src/core/alljoyn/services/audio/build/linux/x86_64/debug/dist/cpp/bin
+./alljoyn-daemon
+
+cd /home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src/core/alljoyn/services/audio/build/linux/x86_64/debug/dist/audio/bin/samples
+./SinkService "Friendly Name"
+./SinkClient v_stand.wav
+//###################### PC ########################//
+
+
+If you wish to cross-compile Linux, I suggest using the OpenWrt platform: OS=openwrt CPU=openwrt. It's basically Linux but setup for cross compilation. Unfortunately, you will need to specify many parameters for the various tools:
+TARGET_PATH - path to the cross-compiler tools
+TARGET_CC - full name of the C compiler (e.g., mips-openwrt-linux-uclibc-gcc)
+TARGET_CXX - full name of the C++ compiler
+TARGET_LINK - full name of the linker (typically the same as the C compiler)
+TARGET_AR - full name of the static library archiver
+TARGET_RANLIB - full name of the ranlib tool
+TARGET_CFLAGS - platform C flags
+TARGET_CPPFLAGS - platform C++ flags
+TARGET_LINKFLAGS - platform linker flags
+STAGING_DIR - path the equivalent of the target root directory on the host
+TARGET_LINK=mips-linux-uclibc-g++
+
+
+cd /home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src-arm/core/alljoyn/services/audio
+
+
+//###################### MIPS ########################//
+scons OS=openwrt CPU=openwrt BINDINGS=core,cpp SERVICES=about,audio WS=off \
+TARGET_PATH=$PATH \
+TARGET_CC=arm-none-linux-gnueabi-gcc \
+TARGET_CFLAGS="-Wall -O" \
+TARGET_CPPFLAGS="-I/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/include" \
+TARGET_CXX=arm-none-linux-gnueabi-g++ \
+TARGET_LINK=arm-none-linux-gnueabi-gcc \
+TARGET_LINKFLAGS="-L/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib" \
+TARGET_AR=arm-none-linux-gnueabi-ar \
+TARGET_RANLIB=arm-none-linux-gnueabi-ranlib \
+STAGING_DIR=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc \
+V=1
+
+VARIANT=release 该模式下日志不能打印
+
+bug_fix:
+/home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src-arm/core/alljoyn/services/audio/inc/alljoyn/audio/posix/ALSADevice.h
+/home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src-arm/core/alljoyn/services/audio/src/posix/ALSADevice.cc
+/home/work/appdir/alljoyn/alljoyn-suite-14.06.00a-src-arm/core/alljoyn/services/audio/samples/posix/SinkService.cc
+alljoyn-suite-14.06.00a-src\core\alljoyn\build_core\conf\openwrt\SConscript
+//###################### MIPS ########################//
+
+
+
+
+run
+
+
+release
+cp build/openwrt/openwrt/release/dist/cpp/bin/alljoyn-daemon  /home/work/nfs/rootfs/usr/bin/ -a
+cp build/openwrt/openwrt/release/dist/audio/bin/samples/SinkService /home/work/nfs/rootfs/usr/bin/ -a
+cp build/openwrt/openwrt/release/dist/cpp/lib/liballjoyn.so  /home/work/nfs/rootfs/usr/lib/ -a
+cp build/openwrt/openwrt/release/dist/audio/lib/liballjoyn_audio.so /home/work/nfs/rootfs/usr/lib/ -a
+cp build/openwrt/openwrt/release/dist/about/lib/liballjoyn_about.so /home/work/nfs/rootfs/usr/lib/ -a
+debug
+cp build/openwrt/openwrt/debug/dist/cpp/bin/alljoyn-daemon  /home/work/nfs/rootfs/usr/bin/ -a
+cp build/openwrt/openwrt/debug/dist/audio/bin/samples/SinkService /home/work/nfs/rootfs/usr/bin/ -a
+cp build/openwrt/openwrt/debug/dist/cpp/lib/liballjoyn.so  /home/work/nfs/rootfs/usr/lib/ -a
+cp build/openwrt/openwrt/debug/dist/audio/lib/liballjoyn_audio.so /home/work/nfs/rootfs/usr/lib/ -a
+cp build/openwrt/openwrt/debug/dist/about/lib/liballjoyn_about.so /home/work/nfs/rootfs/usr/lib/ -a
+
+
+alljoyn-daemon --internal &
+SinkService "alljoyn-audio" &
+
+
+cp build/openwrt/openwrt/release/dist/audio/lib/liballjoyn_audio.so /home/work/nfs/rootfs/usr/lib/ -a
+cp build/openwrt/openwrt/debug/dist/audio/lib/liballjoyn_audio.so /home/work/nfs/rootfs/usr/lib/ -a
+
+
+
+
+
+
+
+  23.092 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Headphone
+  23.092 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:191   | Open Headphone
+  23.092 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Headphone Playback ZC
+  23.093 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Speaker
+  23.093 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Speaker AC
+  23.093 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Speaker DC
+  23.093 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Speaker Playback ZC
+  23.093 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = PCM Playback -6dB
+  23.093 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Mono Output Mixer Left
+  23.093 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Mono Output Mixer Right
+  23.093 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Playback
+  23.093 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Capture
+  23.094 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = 3D
+  23.094 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = 3D Filter Lower Cut-Off
+  23.094 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = 3D Filter Upper Cut-Off
+  23.094 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = ADC High Pass Filter
+  23.094 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = ADC PCM
+  23.094 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = ADC Polarity
+  23.094 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = ALC Attack
+  23.094 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = ALC Decay
+  23.094 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = ALC Function
+  23.095 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = ALC Hold Time
+  23.096 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = ALC Max Gain
+  23.096 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = ALC Min Gain
+  23.096 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = ALC Mode
+  23.096 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = ALC Target
+  23.096 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = DAC Deemphasis
+  23.096 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = DAC Polarity
+  23.096 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Left Boost Mixer LINPUT1
+  23.096 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Left Boost Mixer LINPUT2
+  23.097 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Left Boost Mixer LINPUT3
+  23.097 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Left Input Mixer Boost
+  23.097 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Left Output Mixer Boost Bypass
+  23.097 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Left Output Mixer LINPUT3
+  23.097 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Left Output Mixer PCM
+  23.097 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Noise Gate
+  23.097 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Noise Gate Threshold
+  23.430 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Right Boost Mixer RINPUT1
+  23.430 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Right Boost Mixer RINPUT2
+  23.431 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Right Boost Mixer RINPUT3
+  23.431 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Right Input Mixer Boost
+  23.431 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Right Output Mixer Boost Bypass
+  23.431 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Right Output Mixer PCM
+  23.431 TRACE    ALLJOYN_AUDIO lepDisp         src/posix/ALSADevice.cc:185   | Open controlName = Right Output Mixer RINPUT3
+
+
+numid=40,iface=MIXER,name='Left Output Mixer PCM Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+
+numid=37,iface=MIXER,name='Right Output Mixer PCM Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+
+
+Left Output Mixer PCM
+Right Output Mixer PCM
+
+
+
+amixer cset numid=40,iface=MIXER,name='Left Output Mixer PCM Playback Switch' off
+
+
+
+
