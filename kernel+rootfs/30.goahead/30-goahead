@@ -1,0 +1,185 @@
+
+
+1.查看编译选项
+[qiang@CentOS goahead-3.5.0]$ make help
+Use "SHOW=1 make" to show executed commands.
+
+
+2.编译
+1)
+解决IP地址获取失败的错误
+http.c
+static int get_ip_addr(struct in_addr *inaddr)
+{
+	int sockfd = -1; 
+	struct ifreq ifr;
+	struct sockaddr_in *addr = NULL;
+
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if(sockfd < 0)
+	{
+		error("create socket error!");
+		return -1;
+	}
+
+	addr = (struct sockaddr_in *)&ifr.ifr_addr;
+
+	memset(&ifr, 0, sizeof(struct ifreq));
+	strcpy(ifr.ifr_name, "br0");
+	if(ioctl(sockfd, SIOCGIFADDR, &ifr) != -1)
+	{
+		error("ioctl socket ok! %s", ifr.ifr_name);
+		goto sucess;
+	}
+
+	memset(&ifr, 0, sizeof(struct ifreq));
+	strcpy(ifr.ifr_name, "wlan0");
+	if(ioctl(sockfd, SIOCGIFADDR, &ifr) != -1)
+	{
+		error("ioctl socket ok! %s", ifr.ifr_name);
+		goto sucess;
+	}
+
+	memset(&ifr, 0, sizeof(struct ifreq));
+	strcpy(ifr.ifr_name, "eth0");
+	if(ioctl(sockfd, SIOCGIFADDR, &ifr) != -1)
+	{
+		error("ioctl socket ok! %s", ifr.ifr_name);
+		goto sucess;
+	}
+
+	error("ioctl socket error!");
+	close(sockfd);
+	return -1;
+
+sucess:
+	*inaddr = addr->sin_addr;
+	close(sockfd);
+	return 0;
+}
+
+#if 0
+    struct hostent  *hp;
+    if ((hp = gethostbyname(host)) == NULL) {
+        error("Cannot get host address for host %s: errno %d", host, errno);
+        return -1;
+    }
+    memcpy((char*) &intaddr, (char *) hp->h_addr_list[0], (size_t) hp->h_length);
+    ipaddr = inet_ntoa(intaddr);
+#else //换种方式获取ip地址 (ipv4)
+	if( get_ip_addr(&intaddr) < 0 )
+	{
+		error("get_ip_addr error!");
+		return -1;
+	}
+
+	ipaddr=inet_ntoa(intaddr);
+#endif
+
+2)
+goahead: 0: mbedtls: Unable to read key file self.key
+goahead-linux-default-me.h
+#ifndef ME_COM_MATRIXSSL
+    #define ME_COM_MATRIXSSL 0
+#endif
+#ifndef ME_COM_SSL
+    #define ME_COM_SSL 0
+#endif
+goahead-linux-default.mk
+ME_COM_MBEDTLS        ?= 0
+ME_COM_NANOSSL        ?= 0
+ME_COM_OPENSSL        ?= 0
+ME_COM_OSDEP          ?= 1
+ME_COM_SSL            ?= 0
+
+3)
+添加访问记录文件
+goahead-3.5.0/projects/goahead-linux-default-me.h
+#define ME_GOAHEAD_ACCESS_LOG 1
+tatic char     accessLog[64] = "var/log/access.log";       /* Log filename */
+运行时会在var/log/目录生成access.log
+
+4)
+自定义action
+static void gettime(Webs *wp);
+static void ledsethandle(Webs *wp);
+static void passwdsethandle(Webs *wp);
+
+5)
+自定义jst
+static void getDate(int jid, Webs *wp, int argc, char **argv);
+static void getledstate(int jid, Webs *wp, int argc, char **argv);
+
+SHOW=1 make CC=arm-none-linux-gnueabi-gcc ARCH=arm
+make CC=arm-none-linux-gnueabi-gcc ARCH=arm
+make CC=arm-none-linux-gnueabi-gcc ARCH=arm clean
+
+
+3.运行
+1)
+cp build/linux-arm-default/bin/libgo.so /home/work/nfs/rootfs/usr/lib -a
+cp build/linux-arm-default/bin/goahead /home/work/nfs/rootfs/usr/bin -a
+
+2)
+[qiang@CentOS web]$ tree
+.
+|-- cgi-bin
+|   `-- cgitest.cgi
+|-- control.asp
+|-- index.html
+|-- measure.html
+|-- pub
+|   |-- favicon.ico
+|   |-- login.html
+|   `-- main.css
+|-- setting.html
+`-- test.jst
+
+测试CGI
+goahead源码路径下./test/cgitest.c是c写 的cgi文件
+arm-none-linux-gnueabi-gcc cgitest.c -o cgitest.cgi
+拷贝cgitest.cgi到/web/cgi-bin
+修改源码，使错误信息能正确显示（可选）
+goahead: 0: Cannot find CGI program: cgi-bin/cgi-bin/cgitest.cgi
+# vi src/cgi.c +105
+error("Cannot find CGI program: ", cgiPath);
+修改为：
+error("Cannot find CGI program: %s", cgiPath);
+route uri=/cgi-bin dir=/web  handler=cgi	// dir设置为web目录的绝对路径
+
+action处理
+route uri=/action/led_set methods=GET handler=action redirect=200@/control.asp redirect=500@/test.jst
+route uri=/action/passwd_set methods=POST handler=action redirect=200@/setting.html redirect=500@/test.jst
+
+asp、jst文件
+route uri=/ extensions=jst,asp handler=jst
+拷贝goahead-3.5.0/test/web/test.jst到/web
+
+添加Form Authentication
+route uri=/pub/
+route uri=/action/login methods=POST handler=action redirect=200@/ redirect=401@/pub/login.html
+route uri=/action/logout methods=GET|POST handler=action redirect=200@/pub/login.html
+route uri=/favicon.ico auth=form handler=continue abilities=manage redirect=401@/pub/favicon.ico
+route uri=/ auth=form handler=continue abilities=manage redirect=401@/pub/login.html
+role name=user abilities=view,person,
+role name=person abilities=breathe,
+role name=administrator abilities=user,manage,
+role name=admin abilities=user,manage,
+user name=gq213 password=d7fcbd937cfff055b0eb7ec5480aedd2 roles=administrator //gqiang
+user name=admin password=b26bbb9407b20d92c5b7dd071a108dcc roles=administrator //admin
+
+3)
+goahead --auth /etc/goahead/auth.txt --route /etc/goahead/route.txt --home / --log stderr:9 &
+goahead --auth /etc/goahead/auth.txt --route /etc/goahead/route.txt --home / --verbose &
+
+4)
+http://192.168.1.6
+http://192.168.1.6/test.jst
+http://192.168.1.6/cgi-bin/cgitest.cgi
+
+
+
+
+
+
+

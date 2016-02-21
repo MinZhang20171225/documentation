@@ -1,0 +1,81 @@
+./goahead --home /home/gq213/work/webserver/www --verbose &
+./goahead --home /home/gq213/work/webserver/www --log stderr:9 &
+
+
+/*
+    Output a HTTP response back to the browser. If redirect is set to a URL, the browser will be sent to this location.
+ */
+PUBLIC void websResponse(Webs *wp, int code, char *message)
+{
+    ssize   len;
+    
+    assert(websValid(wp));
+    websSetStatus(wp, code);
+
+    if (!smatch(wp->method, "HEAD") && message && *message) {
+        len = slen(message);
+        websWriteHeaders(wp, len + 2, 0);
+        websWriteEndHeaders(wp);
+        websWriteBlock(wp, message, len);
+        websWriteBlock(wp, "\r\n", 2);
+    } else {
+        websWriteHeaders(wp, 0, 0);
+        websWriteEndHeaders(wp);
+    }
+    websDone(wp);
+}
+
+
+char    *message;
+
+websSetStatus(wp, code);
+
+websWriteHeaders(wp, len + 2, 0);
+websWriteEndHeaders(wp);
+websWriteBlock(wp, message, len);
+websWriteBlock(wp, "\r\n", 2);
+or
+websWriteHeaders(wp, 0, 0);
+websWriteEndHeaders(wp);
+
+websDone(wp);
+
+wfree(message);
+
+
+ Do formatted output to the browser. This is the public Javascript and form write procedure.
+PUBLIC ssize websWrite(Webs *wp, char *fmt, ...)
+|--->PUBLIC ssize websWriteBlock(Webs *wp, char *buf, ssize size)
+
+
+Date: Thu Apr 10 05:03:59 2014
+
+Last-Modified: Thu Apr 10 04:49:34 2014
+fileHandler
+
+char        *date;
+if ((date = websGetDateString(NULL)) != NULL) {
+            websWriteHeader(wp, "Date", "%s", date);
+            wfree(date);
+        }
+
+struct tm {        /* a broken-down time */  
+     int   tm_sec;     /* seconds after the minute: [0 - 60] */  
+     int   tm_min;     /* minutes after the hour: [0 - 59] */  
+     int   tm_hour;    /* hours after midnight: [0 - 23] */  
+     int   tm_mday;    /* day of the month: [1 - 31] */  
+     int   tm_mon;     /* months since January: [0 - 11] */  
+     int   tm_year;    /* years since 1900 */  
+     int   tm_wday;    /* days since Sunday: [0 - 6] */  
+     int   tm_yday;    /* days since January 1: [0 - 365] */  
+     int   tm_isdst;   /* daylight saving time flag: <0, 0, >0 */  
+};  
+注意：tm_year为1900至今所经历的年数，tm_mon范围为0-11；2009-9-20表示为tm结构体时，tm_year = 109，tm_mon = 8，tm_mday = 20，在直接使用tm成员值的时候需要注意。
+
+
+<input name="ipadr" type="text" id="ipadr2" tabindex="2" size="3" maxlength="3" value="0"onfocus="if (value =='0'){value =''}"onblur="if (value ==''){value='0'}"/>
+
+使用js赋值
+document.getElementById("ipadr2").value = "100";
+
+

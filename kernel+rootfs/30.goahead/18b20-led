@@ -1,0 +1,64 @@
+
+adb命令查看LED或者backlight的亮度status
+cd /sys/class/leds/xxx/brightness
+(xxx表示的是light的名字，例如green，blue，red分别表示绿灯、蓝灯和红灯，lcd-backlight表示的是lcd背光。)
+如果出现LED或Backlight不正常时，可以通过进入到相应的folder执行如下命令去检测是否driver有问题：
+echo brightness_level > brightness  检查是否按照你设置的亮度显示。
+对于LED来说brightness_level只要不是0，driver都会让led on。
+ 
+LCD背光不支持blink，测试LED blink可以执行如下命令：
+cd /sys/class/leds/xxx/
+echo timer > trigger        这个命令会创建delay_on和delay_off两个文件。
+echo on_time > delay_on 这个命令用于设置LED on的时间
+echo off_time > delay_on 这个命令用于设置LED off的时间（On和off的时间都是以毫秒为单位的。)
+echo timer > trigger        命令清除delay_on和delay_off时间，让led off。
+echo none > trigger        删除delay_on/delay_off 节点
+在kernel_log 可以看到leds.s中函数调用的情况
+   如 printk(“mt65xx_leds_set_cust: set brightness, name:%s, mode:%d, level:%dn”, cust->name, cust->mode, level);
+
+
+要常亮 echo 1 > /sys/class/leds/myboard:led0/brightness
+要熄灭 echo 0 > /sys/class/leds/myboard:led0/brightness
+要快闪 
+echo 125 > /sys/class/leds/myboard:led0/delay_on
+echo 375 > /sys/class/leds/myboard:led0/delay_off
+要慢闪
+echo 250 > /sys/class/leds/myboard:led0/delay_on
+echo 750 > /sys/class/leds/myboard:led0/delay_off
+
+arm-linux-gcc led_handle.c -o led
+arm-linux-gcc led_set.c -o sled
+
+
+/sys/devices/w1_bus_master1/28-00000482b508/w1_slave
+
+
+arm-linux-gcc 18b20.c -o 18b20
+
+
+
+
+[root@tq210 /sys/devices/platform/leds-gpio/leds/led2]#cat delay_on
+500
+[root@tq210 /sys/devices/platform/leds-gpio/leds/led2]#cat delay_off 
+500
+[root@tq210 /sys/devices/platform/leds-gpio/leds/led2]#cat trigger 
+none mmc0 [timer] heartbeat rfkill0 
+
+灭
+echo none > trigger
+echo 0 > brightness
+亮
+echo none > trigger
+echo 1 > brightness
+闪
+echo timer > trigger
+默认500，500
+不能设置500，否则常亮或常灭
+echo 500 > delay_on X
+echo 500 > delay_off X
+
+
+
+
+
