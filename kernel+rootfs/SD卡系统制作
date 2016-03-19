@@ -30,25 +30,8 @@ cp /home/work/nfs/rootfs/.ash_history /run/media/qiang/15761958-cd02-4204-80e1-9
 
 
 
-rcS
-ifconfig lo 127.0.0.1
-
-ifconfig eth0 up
-udhcpc -b -i eth0 -x hostname:tq210 -R &
-
-goahead --auth /etc/goahead/auth.txt --route /etc/goahead/route.txt --home / --verbose &
-
-
-default.script
-		cho "restart dms..."
-		killall FileMediaServerTest
-		sleep 1
-		FileMediaServerTest -f TQ210_dms /home/root &
-		sleep 1
-		echo "restart dmr..."
-		killall MediaRendererTest
-		sleep 1
-		MediaRendererTest -f TQ210_dmr &
+rcS.sd
+default.script.sd
 
 
 
