@@ -1,0 +1,51 @@
+
+export PKG_CONFIG_PATH=/home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/usr/lib/pkgconfig
+
+if test "$cross_compiling" = no; then :
+
+./configure \
+--prefix=/usr \
+--with-piddir=/var/run \
+--with-lockdir=/var/lock \
+--with-nmbdsocketdir=/var/nmbd \
+--with-logfilebase=/var/log \
+--with-privatedir=/etc/samba \
+--with-configdir=/etc/samba \
+--with-codepagedir=/etc/samba \
+--host=arm-none-linux-gnueabi \
+samba_cv_CC_NEGATIVE_ENUM_VALUES=yes \
+ac_cv_file__proc_sys_kernel_core_pattern=yes
+	
+-I/usr/local/include
+-L/usr/local/lib
+
+make
+
+
+
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/thumb2/lib/libnsl* /home/work/nfs/rootfs/lib -a
+cp /home/work/cross/arm-2014.05/arm-none-linux-gnueabi/libc/thumb2/lib/libcrypt* /home/work/nfs/rootfs/lib -a
+cp /home/work/appdir/samba/samba-3.6.25/source3/bin/libtalloc.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/appdir/samba/samba-3.6.25/source3/bin/libtevent.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/appdir/samba/samba-3.6.25/source3/bin/libtdb.so* /home/work/nfs/rootfs/usr/lib -a
+cp /home/work/appdir/samba/samba-3.6.25/source3/bin/libwbclient.so* /home/work/nfs/rootfs/usr/lib -a
+
+
+
+route add default gw 192.168.1.1
+smbget
+mkdir -p /var/run/nobody /var/nmbd //rcS
+adduser -h /var/run/nobody -s /bin/false -D nobody
+
+[root@tq210 /]#smbpasswd -a root
+New SMB password:root
+Retype new SMB password:root
+Added user root.
+
+smbd -i -d 8
+
+smbd -D
+nmbd -D
+
+
+
