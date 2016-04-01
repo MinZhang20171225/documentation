@@ -1,0 +1,25 @@
+
+
+	/*电源管理，保持供电*/
+	/* PS_HOLD(GPJ2_5) set to output high */
+	ldr		r0, =ELFIN_GPIO_BASE
+	ldr		r1, =0x00100000
+	str		r1, [r0, #GPJ2CON_OFFSET]
+
+	ldr		r1, =0x0400
+	str		r1, [r0, #GPJ2PUD_OFFSET]
+
+	ldr		r1, =0x20
+	str		r1, [r0, #GPJ2DAT_OFFSET]
+
+static void omap3_touchbook_poweroff(void)
+{
+	int pwr_off = TB_KILL_POWER_GPIO;
+
+	if (gpio_request_one(pwr_off, GPIOF_OUT_INIT_LOW, "DVI reset") < 0)
+		printk(KERN_ERR "Unable to get kill power GPIO\n");
+}
+
+关机前先结束samba，否则
+umount: can't remount /dev/root read-only
+umount: can't remount rootfs read-only
