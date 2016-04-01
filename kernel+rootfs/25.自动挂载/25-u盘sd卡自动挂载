@@ -28,3 +28,23 @@ usbdisk remove!(sda)
 [  527.963054] sd 2:0:0:0: [sda] Assuming drive cache: write through
 [  527.974290] sd 2:0:0:0: [sda] Attached SCSI removable disk
 usbdisk insert!(sda4)
+
+
+centos:
+mkdir /media
+
+tq210
+[root@tq210 /media]#mkdir -p /var/media/cdrom /var/media/sd /var/media/udisk //rcS
+[root@tq210 /media]#ln -s /var/media/cdrom /media/cdrom
+[root@tq210 /media]#ln -s /var/media/sd /media/sd
+[root@tq210 /media]#ln -s /var/media/udisk /media/udisk
+[root@tq210 /media]#ls -l
+total 0
+lrwxrwxrwx    1 root     root            16 Jan  1 00:50 cdrom -> /var/media/cdrom
+lrwxrwxrwx    1 root     root            13 Jan  1 00:31 sd -> /var/media/sd
+lrwxrwxrwx    1 root     root            16 Jan  1 00:50 udisk -> /var/media/udisk
+
+
+
+
+
