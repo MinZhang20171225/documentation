@@ -1,0 +1,4 @@
+
+::once:/usr/sbin/telnetd -l /bin/login
+telnetd -l login
+
