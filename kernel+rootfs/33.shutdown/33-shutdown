@@ -23,3 +23,9 @@ static void omap3_touchbook_poweroff(void)
 关机前先结束samba，否则
 umount: can't remount /dev/root read-only
 umount: can't remount rootfs read-only
+
+
+arm-none-linux-gnueabi-gcc KeyDaemon.c -o KeyDaemon
+cp KeyDaemon /home/work/nfs/rootfs/usr/bin/
+
+
