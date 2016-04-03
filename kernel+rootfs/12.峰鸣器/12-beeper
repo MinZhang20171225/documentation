@@ -47,8 +47,8 @@ input: pwm-beeper as /devices/platform/s3c24xx-pwm.1/pwm-beeper.0/input/input0
 
 应用程序使用input_event来操作
 
-arm-linux-gcc beep_test.c -o beep_test
-
+arm-none-linux-gnueabi-gcc -Wall beep_test.c -o beep_test
+cp beep_test /home/work/nfs/rootfs/usr/bin/
 
 
 
