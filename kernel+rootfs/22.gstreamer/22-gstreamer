@@ -156,5 +156,7 @@ gst-launch-1.0 playbin uri=http://smedia.hdxen.com:8000	//MPEG-1 Layer 3 (MP3) �
 gst-launch-1.0 playbin uri=http://s2.viastreaming.net:6165	//MPEG-4 AAC 解码器
 
 
+gst-launch-1.0 -v playbin uri=mms://live.cdbs.com.cn/914
+
 
 
