@@ -1,0 +1,21 @@
+
+make package/ffmpeg3/configure V=99
+make package/ffmpeg3/compile V=99
+make package/ffmpeg3/clean V=99
+
+make package/mplayer/configure V=99
+make package/mplayer/compile V=99
+make package/mplayer/clean V=99
+
+
+mplayer -ac help
+mplayer -ao help
+mplayer -vc help
+mplayer -vo help
+
+
+./mplayer -ac mad -ao alsa Call_Me_Maybe.mp3
+./mplayer -ac libwmav2 -ao alsa jiaru.wma < /dev/console &
+./mplayer -ac libwmav2 -ao alsa -cache 512 -cache-min 10 mms://live.cdbs.com.cn/914
+./mplayer -ac libwmav2 -ao alsa -cache 2000 -cache-min 5 mms://218.28.9.99/gushi
+
