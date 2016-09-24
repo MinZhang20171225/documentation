@@ -2,7 +2,7 @@
 
 export PATH=/Media/SD-P1/bin:$PATH
 
-export LD_LIBRARY_PATH=/Media/SD-P1/lib/gstreamer-1.0:/Media/SD-P1/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/Media/SD-P1/lib:$LD_LIBRARY_PATH
 
 export GST_PLUGIN_PATH=/Media/SD-P1/lib/gstreamer-1.0:/usr/lib/gstreamer-1.0
 export GST_PLUGIN_SCANNER=/usr/lib/gstreamer-1.0/gst-plugin-scanner

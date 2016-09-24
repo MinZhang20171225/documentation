@@ -19,3 +19,6 @@ mplayer -vo help
 ./mplayer -ac libwmav2 -ao alsa -cache 512 -cache-min 10 mms://live.cdbs.com.cn/914
 ./mplayer -ac libwmav2 -ao alsa -cache 2000 -cache-min 5 mms://218.28.9.99/gushi
 
+mkfifo -m 777 /tmp/pcm-snd
+aplay -M /tmp/pcm-snd
+mplayer -ao pcm:file=/tmp/pcm-snd /tmp/mounts/USB-A1/7_Days.mp3
