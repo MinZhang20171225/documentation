@@ -1,0 +1,309 @@
+
+
+rpmforge
+
+# wget http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm
+# rpm -Uvh rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm
+
+# wget http://dag.wieers.com/rpm/packages/RPM-GPG-KEY.dag.txt
+# rpm --import RPM-GPG-KEY.dag.txt
+
+
+ntfs-3g
+
+yum install ntfs-3g
+fuse-ntfs-3g.x86_64.0.2013.1.13-2.el7.rf
+
+
+grub2
+
+[qiang@CentOS ~]$ grub2-editenv list
+saved_entry=CentOS Linux, with Linux 3.10.0-229.el7.x86_64
+[root@CentOS qiang]# grub2-mkconfig -o /boot/grub2/grub.cfg
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-3.10.0-229.el7.x86_64
+Found initrd image: /boot/initramfs-3.10.0-229.el7.x86_64.img
+Found linux image: /boot/vmlinuz-0-rescue-d17d099f858e4a30ba800adcae417193
+Found initrd image: /boot/initramfs-0-rescue-d17d099f858e4a30ba800adcae417193.img
+Found Windows 7 (loader) on /dev/sda1
+Found Windows Recovery Environment (loader) on /dev/sda3
+done
+[root@CentOS qiang]# grub2-editenv list
+saved_entry=CentOS Linux, with Linux 3.10.0-229.el7.x86_64
+
+cat /boot/grub2/grub.cfg | grep Windows
+grub2-set-default "Windows 7 (loader) (on /dev/sda1)"
+grub2-editenv list
+grub2-mkconfig -o /boot/grub2/grub.cfg
+
+
+firefox
+
+User Agent Switcher
+DownThemAll
+
+
+flash-plugin
+
+adobe-release-x86_64-1.0-1.noarch.rpm
+rpm -ivh adobe-release-x86_64-1.0-1.noarch.rpm 
+yum install flash-plugin
+
+
+selinux
+
+修改/etc/selinux/config文件，SELINUX=disabled ，然后重启。
+查看selinux状态：getenforce
+[gq213@gao ~]$ getenforce
+Enforcing
+reboot
+[gq213@gao ~]$ getenforce
+Disabled
+
+
+＃ 关闭防火墙
+
+systemctl stop firewalld.service
+systemctl disable firewalld.service
+systemctl status  firewalld.service
+systemctl is-enabled firewalld.service
+
+
+编译ckermit
+
+tar xzvf x.tar.gz  -C ckermit/
+cd ckermit
+make linux
+编译成功后, 会产生可执行文件wermit
+vi /root/.kermrc
+
+
+bcompare
+
+yum install glibc.i686
+yum install libXrender.i686 libXrandr.i686 libXcursor.i686 libXinerama.i686 libXft.i686 libSM.i686 libstdc++.i686 zlib.i686
+[qiang@CentOS bin]$ vi ~/.bashrc
+export PATH=$PATH:/opt/bin
+
+[root@CentOS opt]# cp /home/work/centos7/ckermit/ckermit/wermit bin/
+
+
+yum install ncurses-devel
+
+
+tftp
+
+/home/work/tftp 775
+yum install tftp tftp-server
+vi /etc/xinetd.d/tftp
+service tftp  
+{  
+    socket_type     = dgram  
+    protocol        = udp  
+    wait            = yes  
+    user            = root  
+    server          = /usr/sbin/in.tftpd  
+    # server_args       = -s /var/lib/tftpboot  
+    # disable           = yes  
+    server_args     = -s /home/work/tftp -c  
+    disable         = no  
+    per_source      = 11  
+    cps         = 100 2  
+    flags           = IPv4  
+}
+service xinetd restart
+[root@gqhost /]# systemctl is-enabled xinetd.service
+enabled
+
+验证一下TFTP是否起来了：
+[root@kashu /]# netstat -tunap | grep :69
+出现下面的信息代表已经启动了
+udp        0      0 0.0.0.0:69              0.0.0.0:* 
+
+
+nfs(v3)
+
+http://initrd.org/wiki/NFS_Setup#RHEL_.2F_CentOS
+
+vi /etc/exports
+/home/network/rootfs *(rw,sync,no_root_squash,no_all_squash)
+
+[root@gao gq213]# systemctl is-enabled nfs-server.service
+disabled
+[root@gao gq213]# systemctl is-enabled nfs-lock.service
+static
+[root@gao gq213]# systemctl is-enabled rpcbind.service
+static
+
+systemctl enable rpcbind 
+systemctl enable nfs-server 
+systemctl enable nfs-lock
+
+reboot
+
+rpcinfo -p
+showmount -e
+
+uboot启动参数：
+noinitrd console=ttySAC0 root=/dev/nfs rw nfsroot=192.168.1.8:/home/network/rootfs,v3,nolock,tcp ip=192.168.1.6 init=/linuxrc
+
+//////////////////////////////////////////////////////////////////////////////////
+mplayer
+
+    Download the latest atrpms-repo rpm from
+    http://dl.atrpms.net/el7-x86_64/atrpms/stable/
+
+    Install atrpms-repo rpm:
+    # rpm -Uvh atrpms-repo*rpm
+
+    Install mplayer rpm package:
+    # yum install mplayer
+
+
+安装yum源优先级插件
+
+这个插件是用来设置yum在调用软件源时的顺序的。因为官方提供的软件源，都是比较稳定和被推荐使用的。因此，官方源的顺序要高于第三方源的顺序。如何保证这个顺序，就需要安装yum-priorities这插件了。
+yum install yum-priorities
+
+配置优先级
+
+安装完后需要设置/etc/yum.repos.d/目录下的.repo相关文件（如CentOS-Base.repo），在这些文件中插入顺序项：priority=N （N为1到99的正整数，数值越小越优先），一般的配置是这样的：
+[base], [addons], [updates], [extras] … priority=1
+[CentOSplus],[contrib] … priority=2
+其他第三的软件源为：priority=N （推荐N>10）
+
+yum remove atrpms-repo-7-7.el7.x86_64
+//////////////////////////////////////////////////////////////////////////////////
+
+
+[qiang@CentOS ~]$ vi ~/.bashrc
+export PATH=$PATH:/home/work/cross/gcc-linaro-4.9-2014.11-x86_64_arm-linux-gnueabi/bin
+export PATH=$PATH:/home/work/201505/uboot/u-boot-2013.01.01/tools
+
+
+vi /etc/exports
+/home/work/201505/nfs/rootfs *(rw,sync,no_root_squash,no_all_squash)
+exportfs -rv
+
+
+
+smartgit
+
+[qiang@CentOS ~]$ ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/qiang/.ssh/id_rsa): 
+Created directory '/home/qiang/.ssh'.
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/qiang/.ssh/id_rsa.
+Your public key has been saved in /home/qiang/.ssh/id_rsa.pub.
+The key fingerprint is:
+56:a8:32:65:30:b8:94:5b:14:71:33:7b:c1:02:5f:d7 qiang@CentOS
+The key's randomart image is:
++--[ RSA 2048]----+
+|   +B++.o ..     |
+|  + .=.=.+  E    |
+| . +  =.o .      |
+|  o  o o .       |
+|    o . S        |
+|     o .         |
+|                 |
+|                 |
+|                 |
++-----------------+
+[qiang@CentOS ~]$ ssh -T git@github.com
+The authenticity of host 'github.com (192.30.252.128)' can't be established.
+RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'github.com,192.30.252.128' (RSA) to the list of known hosts.
+Hi gq213! You've successfully authenticated, but GitHub does not provide shell access.
+
+To configure your GitHub account to use your SSH key:
+    In your favorite text editor, open the ~/.ssh/id_rsa.pub file.
+    Select the entire contents of the file and copy it to your clipboard. Do not add any newlines or whitespace.
+
+打开SmartGit 在Edit中–preference–Authentication–Use system SSH client
+
+
+rpm -Uvh scons-2.3.3-1.noarch.rpm
+
+
+yum install libdaemon-devel
+yum install popt-devel
+yum install avahi-devel
+
+
+[qiang@CentOS ~]$ vi ~/.bashrc
+#export PATH=$PATH:/home/work/cross/gcc-linaro-4.9-2014.11-x86_64_arm-linux-gnueabi/bin
+export PATH=$PATH:/home/work/cross/arm-2014.05/bin
+
+
+$xz -d ***.tar.xz
+$tar -xvf  ***.tar
+
+yum install p7zip
+
+zip文件解压中文文件乱码问题
+由于zip文件中没有声明其编码，所以在Linux上使用unzip解压以默认编码解压，中文文件名会出现乱码。
+使用7z解压即可解决：7z x deepvps.zip
+也可以使用：jar xvf deepvps.zip
+
+使用7zip的命令是7za。
+安装完成后的使用方法：
+7za {a|d|l|e|u|x} 压缩包文件名 {文件列表或目录，可选}
+
+a  向压缩包里添加文件或创建压缩包，如向001.7z添加001.jpg，执行：7za a 001.7z 001.jpg；将001目录打包执行：7za a 001.7z 001；
+d  从压缩里删除文件，如将001.7z里的001.jpg删除，执行：7za d 001.7z 001.jpg
+l  列出压缩包里的文件，如列出001.7z里的文件，执行：7za l 001.7z
+e  解压到当前目录，目录结构会被破坏，如001.rar内有如下目录及文件123/456/789.html，
+执行：7za e 001.rar，目录123和456及文件789.html都会存放在当前目录下。
+x  以完整路径解压。
+
+zip文件解压中文文件乱码问题，由于zip文件中没有声明其编码，所以在Linux上使用unzip解压以默认编码解压，中文文件名会出现乱码。
+
+yum install unrar
+
+
+[qiang@CentOS ~]$ vi ~/.bashrc
+# User specific aliases and functions
+export PATH=$PATH:/opt/bin
+export PATH=$PATH:/home/work/cross/arm-2014.05/bin
+export PATH=$PATH:/home/work/basedir/uboot/u-boot-2013.01.01/tools
+
+vi /etc/exports
+/home/work/nfs/rootfs *(rw,sync,no_root_squash,no_all_squash)
+exportfs -rv
+
+
+rarlinux-x64-5.2.1.tar.gz
+rar x yhcsh.rar //解压 yhcsh.rar 到当前目录
+rar yhcsh.rar ./yhcsh/ //将 yhcsh 目录打包为 yhcsh.rar 
+
+
+samba
+yum install samba*
+vi /etc/samba/smb.conf
+[work]
+       path = /home/work
+       writable = yes
+       browseable = yes
+       valid users = qiang
+smbpasswd -a qiang
+New SMB password:qiang
+Retype new SMB password:qiang
+Added user qiang.
+[root@gqhost home]# systemctl is-enabled smb.service
+disabled
+[root@gqhost home]# systemctl is-enabled nmb.service
+disabled
+systemctl enable smb.service nmb.service
+systemctl status smb.service nmb.service
+systemctl start smb.service nmb.service
+
+
+   49   rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+   50  rpm -Uvh https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+   51   rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm
+   52   yum install vlc
+
+

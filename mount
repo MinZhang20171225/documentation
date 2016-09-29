@@ -4,3 +4,19 @@ mount -t vfat /dev/mmcblk0p1 /mnt
 mount -t nfs -o nolock 192.168.1.8:/home/work/nfs/rootfs /mnt/nfs
 
 
+cp /etc/fstab /etc/fstab.bak
+自动挂载windows分区
+先建立文件夹,最好建立在/media下面，这样做的好处是不影响文件浏览器下的链接。
+mkdir /media/winD
+mkdir /media/winE
+注意/dev/sda1是第一分区，/dev/sda5是第二分区
+vi /etc/fstab
+添加：
+/dev/sda5       /media/winD        ntfs-3g     defaults,user,locale=zh_CN.utf8 0 0
+/dev/sda6       /media/winE        ntfs-3g     defaults,user,locale=zh_CN.utf8 0 0
+
+/dev/sda7       /media/winF        vfat        defaults,iocharset=utf8,uid=1000,gid=1000     0 0
+注意，FAT 类型的磁盘分区要用 iocharset=utf8 来指定编码类型，才能显示中文。加上uid、gid才能写入。
+最后，用命令 “sudo mount -a” 刷新一下就可以在 /media 下看到 2 个分区中的文件了
+
+

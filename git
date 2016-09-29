@@ -1,0 +1,189 @@
+1. 生成 SSH 公钥
+每个需要使用git服务器的工程师，自己需要生成一个ssh公钥
+进入自己的~/.ssh目录，看有没有用 文件名 和 文件名.pub 来命名的一对文件，这个 文件名 通常是 id_dsa 或者 id_rsa。 .pub 文件是公钥，另一个文件是密钥。假如没有这些文件（或者干脆连 .ssh 目录都没有），你可以用 ssh-keygen 的程序来建立它们，该程序在 Linux/Mac 系统由 SSH 包提供， 在 Windows 上则包含在 MSysGit 包里:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+$ ssh-keygen 
+Generating public/private rsa key pair.
+Enter file in which to save the key (/Users/schacon/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /Users/schacon/.ssh/id_rsa.
+Your public key has been saved in /Users/schacon/.ssh/id_rsa.pub.
+The key fingerprint is:
+43:c5:5b:5f:b1:f1:50:43:ad:20:a6:92:6a:1f:9a:3a schacon@agadorlaptop.local
+它先要求你确认保存公钥的位置（.ssh/id_rsa），然后它会让你重复一个密码两次，如果不想在使用公钥的时候输入密码，可以留空。
+现在，所有做过这一步的用户都得把它们的公钥给你或者 Git 服务器的管理者（假设 SSH 服务被设定为使用公钥机制）。他们只需要复制 .pub 文件的内容然后 e-email 之。公钥的样子大致如下：
+1
+2
+3
+4
+5
+6
+7
+$ cat ~/.ssh/id_rsa.pub 
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAklOUpkDHrfHY17SbrmTIpNLTGK9Tjom/BWDSU
+GPl+nafzlHDTYW7hdI4yZ5ew18JH4JW9jbhUFrviQzM7xlELEVf4h9lFX5QVkbPppSwg0cda3
+Pbv7kOdJ/MTyBlWXFCR+HAo3FXRitBqxiX1nKhXpHAZsMciLq8V6RjsNAQwdsdMFvSlVK/7XA
+t3FaoJoAsncM1Q9x5+3V0Ww68/eIFmb1zuUFljQJKprrX88XypNDvjYNby6vw/Pb0rwert/En
+mZ+AW4OZPnTPI89ZPmVMLuayrD2cE86Z/il8b+gw3r3+1nKatmIkjn2so1d01QraTlMqVSsbx
+NrRFi9wrf+M7Q== schacon@agadorlaptop.local
+
+2. 架设服务器
+把开发者的 SSH 公钥添加到这个用户的 authorized_keys 文件中。假设你通过 e-mail 收到了几个公钥并存到了临时文件里。只要把它们加入 authorized_keys 文件
+1
+2
+3
+$ cat /tmp/id_rsa.john.pub >> ~/.ssh/authorized_keys
+$ cat /tmp/id_rsa.josie.pub >> ~/.ssh/authorized_keys
+$ cat /tmp/id_rsa.jessica.pub >> ~/.ssh/authorized_keys
+现在可以使用 –bare 选项运行 git init 来设定一个空仓库，这会初始化一个不包含工作目录的仓库。
+1
+2
+3
+4
+$ cd /opt/git
+$ mkdir project.git
+$ cd project.git
+$ git --bare init
+
+
+这时，开发人员就可以把它加为远程仓库，推送一个分支，从而把第一个版本的工程上传到仓库里了。值得注意的是，每次添加一个新项目都需要通过 shell 登入主机并创建一个纯仓库。我们不妨以 gitserver 作为 git 用户和仓库所在的主机名。如果你在网络内部运行该主机，并且在 DNS 中设定 gitserver 指向该主机，那么以下这些命令都是可用的：
+1
+2
+3
+4
+5
+6
+7
+# 在一个工程师的电脑上
+$ cd myproject
+$ git init
+$ git add .
+$ git commit -m 'initial commit'
+$ git remote add origin git@gitserver:/opt/git/project.git
+$ git push origin master
+这样，其他人的克隆和推送也一样变得很简单：
+1
+2
+3
+4
+$ git clone git@gitserver:/opt/git/project.git
+$ vim README
+$ git commit -am 'fix for the README file'
+$ git push origin master
+用这个方法可以很快捷的为少数几个开发者架设一个可读写的 Git 服务。
+
+
+
+
+
+
+[qiang@qiang 7688]$ git clone qiang@localhost:/mnt/yf-gq/work/7688/openwrt-DM06
+fatal: destination path 'openwrt-DM06' already exists and is not an empty directory.
+[qiang@qiang 7688]$ cd ..
+[qiang@qiang work]$ git clone qiang@localhost:/mnt/yf-gq/work/7688/openwrt-DM06
+Cloning into 'openwrt-DM06'...
+remote: Counting objects: 12311, done.
+remote: Compressing objects: 100% (7351/7351), done.
+remote: Total 12311 (delta 4441), reused 11722 (delta 4206)
+Receiving objects: 100% (12311/12311), 442.64 MiB | 12.40 MiB/s, done.
+Resolving deltas: 100% (4441/4441), done.
+Checking out files: 100% (6008/6008), done.
+[qiang@qiang work]$ 
+
+
+
+
+
+
+
+一、git仓库迁移
+
+1，从原仓库clone或pull到本地仓库
+
+git clone project_name ?【old_remote_repository_address】
+
+2，?在新的git创建一个新仓库。如果用gitolite搭建的git服务器，那么只需要在配置文件gitolite.conf上添加仓库和用户，然后push到服务器即可。
+
+3，进入clone下来的本地仓库目录，将远程仓库地址修改为新的远程仓库地址
+
+project_name> git remote remove origin
+
+ project_name> git remote add origin【new_remote_repository_address】
+
+4，将本地仓库文件push到新的远程仓库
+
+project_name> ?gitpush origin master
+
+二、修改?远程仓库地址
+
+两种方式，除了上面第3步的修改方法，还可以：
+
+git remote set-url origin ?【new_remote_repository_address】
+
+
+
+
+
+…or create a new repository on the command line
+echo "# openwrt-M100" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/gq213/openwrt-M100.git
+git push -u origin master
+
+…or push an existing repository from the command line
+git remote add origin https://github.com/gq213/openwrt-M100.git
+git push -u origin master
+
+
+
+
+
+[qiang@qiang openwrt-M100]$ git remote
+origin
+[qiang@qiang openwrt-M100]$ git remote -v
+origin	git://git.openwrt.org/15.05/openwrt.git (fetch)
+origin	git://git.openwrt.org/15.05/openwrt.git (push)
+[qiang@qiang openwrt-M100]$ git remote remove origin
+[qiang@qiang openwrt-M100]$ git remote add origin https://github.com/gq213/openwrt-M100.git
+[qiang@qiang openwrt-M100]$ git remote -v
+origin	https://github.com/gq213/openwrt-M100.git (fetch)
+origin	https://github.com/gq213/openwrt-M100.git (push)
+[qiang@qiang openwrt-M100]$ git push -u origin master
+Username for 'https://github.com': gq213
+Password for 'https://gq213@github.com': 
+Counting objects: 11964, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (7051/7051), done.
+Writing objects: 100% (11964/11964), 345.13 MiB | 30.00 KiB/s, done.
+Total 11964 (delta 4282), reused 11728 (delta 4206)
+remote: warning: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.
+remote: warning: See http://git.io/iEPt8g for more information.
+remote: warning: File dl/gcc-linaro-4.8-2014.04.tar.xz is 66.70 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB
+remote: warning: File dl/linux-3.18.29.tar.xz is 77.29 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB
+To https://github.com/gq213/openwrt-M100.git
+ * [new branch]      master -> master
+Branch master set up to track remote branch master from origin.
+[qiang@qiang openwrt-M100]$ 
+
+
+设置Git全局用户配置
+git config --global user.name "gq213"
+git config --global user.email gaoqiang1211@gmail.com
+可以用git config --list查看刚刚上面得设置
+
+
+git reset --hard 2016.08
+git reset --hard HEAD^
+
+
