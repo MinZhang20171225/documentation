@@ -176,11 +176,16 @@ To https://github.com/gq213/openwrt-M100.git
 Branch master set up to track remote branch master from origin.
 [qiang@qiang openwrt-M100]$ 
 
+git clone --bare ssh://qiang@192.168.1.200/mnt/yf-gq/work/tar/u-boot
+
 
 设置Git全局用户配置
 git config --global user.name "gq213"
 git config --global user.email gaoqiang1211@gmail.com
 可以用git config --list查看刚刚上面得设置
+/etc/gitconfig
+~/.gitconfig
+.git/config
 
 
 git reset --hard 2016.08
