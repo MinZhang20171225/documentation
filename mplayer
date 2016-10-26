@@ -22,3 +22,89 @@ mplayer -vo help
 mkfifo -m 777 /tmp/pcm-snd
 aplay -M /tmp/pcm-snd
 mplayer -ao pcm:file=/tmp/pcm-snd /tmp/mounts/USB-A1/7_Days.mp3
+
+
+
+./configure \
+--disable-ftp \
+--disable-pvr \
+--disable-tv-v4l2 \
+--disable-tv \
+--disable-vcd \
+--disable-dvb \
+--disable-real \
+--disable-xanim \
+--disable-v4l2 \
+--disable-pnm \
+--disable-fbdev \
+--disable-yuv4mpeg \
+--disable-md5sum \
+--disable-tga
+
+
+
+mplayer -ao alsa /mnt/7_Days.mp3
+mplayer -ao alsa /home/work/music/10.wma
+
+
+mkfifo /tmp/mplayer-infifo
+mplayer -quiet -slave -idle -ao alsa -input file=/tmp/mplayer-infifo 2>/tmp/mplayer-ack &
+
+
+echo "loadfile /home/work/music/10.wma" > /tmp/mplayer-infifo
+echo "get_file_name" > /tmp/mplayer-infifo
+
+echo "get_time_pos" > /tmp/mplayer-infifo        
+echo "get_time_length" > /tmp/mplayer-infifo
+
+echo "pause" > /tmp/mplayer-infifo
+echo "stop" > /tmp/mplayer-infifo
+echo "seek 60 2" > /tmp/mplayer-infifo
+
+echo "mute 1" > /tmp/mplayer-infifo
+echo "mute 0" > /tmp/mplayer-infifo
+echo "volume 100 1" > /tmp/mplayer-infifo
+echo "volume 1 1" > /tmp/mplayer-infifo
+
+
+缺省情况下ALSA静音所有的输出。为了获得声音，必须解除主音量和PCM音量的静音。
+amixer -c 0 sset 'Master',0 100%,100% unmute
+amixer -c 0 sset 'PCM ',0 100% unmute
+
+
+numid=5,iface=MIXER,name='Headphone Playback Volume'
+  ; type=INTEGER,access=rw---R--,values=2,min=0,max=127,step=0
+  : values=88,88
+  | dBscale-min=-121.00dB,step=1.00dB,mute=1
+
+numid=40,iface=MIXER,name='Left Output Mixer PCM Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+numid=37,iface=MIXER,name='Right Output Mixer PCM Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+
+[root@buildroot ~]# amixer cset numid=5 100
+numid=5,iface=MIXER,name='Headphone Playback Volume'
+  ; type=INTEGER,access=rw---R--,values=2,min=0,max=127,step=0
+  : values=100,100
+  | dBscale-min=-121.00dB,step=1.00dB,mute=1
+
+[root@buildroot ~]# amixer cset numid=37 off
+numid=37,iface=MIXER,name='Right Output Mixer PCM Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+[root@buildroot ~]# amixer cset numid=40 off
+numid=40,iface=MIXER,name='Left Output Mixer PCM Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=off
+[root@buildroot ~]# amixer cset numid=37 on
+numid=37,iface=MIXER,name='Right Output Mixer PCM Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+[root@buildroot ~]# amixer cset numid=40 on
+numid=40,iface=MIXER,name='Left Output Mixer PCM Playback Switch'
+  ; type=BOOLEAN,access=rw------,values=1
+  : values=on
+
+
