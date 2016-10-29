@@ -1,0 +1,16 @@
+
+
+dd iflag=dsync oflag=dsync if=1/BD-M-100-fullflash.bin of=1/uboot bs=64k count=3
+dd iflag=dsync oflag=dsync if=1/BD-M-100-fullflash.bin of=1/env bs=64k skip=3 count=1
+dd iflag=dsync oflag=dsync if=1/BD-M-100-fullflash.bin of=1/fac bs=64k skip=4 count=1
+dd iflag=dsync oflag=dsync if=1/BD-M-100-fullflash.bin of=1/root bs=64k skip=5
+
+dd iflag=dsync oflag=dsync if=2/m100rom20140119.bin of=2/uboot bs=64k count=3
+dd iflag=dsync oflag=dsync if=2/m100rom20140119.bin of=2/env bs=64k skip=3 count=1
+dd iflag=dsync oflag=dsync if=2/m100rom20140119.bin of=2/fac bs=64k skip=4 count=1
+dd iflag=dsync oflag=dsync if=2/m100rom20140119.bin of=2/root bs=64k skip=5
+
+dd iflag=dsync oflag=dsync if=3/M100-Factory-fullflash.bin of=3/uboot bs=64k count=3
+dd iflag=dsync oflag=dsync if=3/M100-Factory-fullflash.bin of=3/env bs=64k skip=3 count=1
+dd iflag=dsync oflag=dsync if=3/M100-Factory-fullflash.bin of=3/fac bs=64k skip=4 count=1
+dd iflag=dsync oflag=dsync if=3/M100-Factory-fullflash.bin of=3/root bs=64k skip=5
