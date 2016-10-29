@@ -48,7 +48,7 @@ mplayer -ao alsa /home/work/music/10.wma
 
 
 mkfifo /tmp/mplayer-infifo
-mplayer -quiet -slave -idle -ao alsa -input file=/tmp/mplayer-infifo 2>/tmp/mplayer-ack &
+mplayer -quiet -slave -idle -ao alsa -input file=/tmp/mplayer-infifo -cache 512 -cache-min 50 &
 
 
 echo "loadfile /home/work/music/10.wma" > /tmp/mplayer-infifo
