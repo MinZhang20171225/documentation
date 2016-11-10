@@ -172,7 +172,7 @@ user name=admin password=b26bbb9407b20d92c5b7dd071a108dcc roles=administrator //
 goahead --auth /etc/goahead/auth.txt --route /etc/goahead/route.txt --home / --log stderr:9 &
 goahead --auth /etc/goahead/auth.txt --route /etc/goahead/route.txt --home / --verbose &
 pc
-goahead --auth /mnt/yf-gq/work/web/goahead-3.6.3/test/auth.txt --route /mnt/yf-gq/work/web/goahead-3.6.3/test/route.txt --home /mnt/yf-gq/work/web/goahead-3.6.3/test/ --log stderr:2
+goahead --auth /mnt/yf-gq/work/web/goahead-3.6.3/src/auth.txt --route /mnt/yf-gq/work/web/goahead-3.6.3/src/route.txt --home /mnt/yf-gq/work/web/goahead-3.6.3/test/ --log stderr:2
 
 4)
 http://192.168.1.6
